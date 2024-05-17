@@ -5,7 +5,8 @@ from strawberry.utils.str_converters import to_snake_case
 
 from src.users.graphql import schemas
 from src.users.dto import UserDTO
-from src.users.repositories.sqlalchemy.uow import AbstractUserUnitOfWork, SQLAlchemyUserUnitOfWork
+from src.users.repositories.sqlalchemy.uow import SQLAlchemyUserUnitOfWork
+from src.users.repositories.base import AbstractUserUnitOfWork
 
 
 # TODO: remove dependencies

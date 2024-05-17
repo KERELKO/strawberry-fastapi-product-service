@@ -1,13 +1,18 @@
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
+from src.common.repo import AbstractRepository
+from src.common.uow import AbstractUnitOfWork
 
-class BaseSQLAlchemyRepository:
+from .config import async_session_factory
+
+
+class BaseSQLAlchemyRepository(AbstractRepository):
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
 
-class BaseSQLAlchemyUnitOfWork:
-    def __init__(self, session_factory: async_sessionmaker) -> None:
+class BaseSQLAlchemyUnitOfWork(AbstractUnitOfWork):
+    def __init__(self, session_factory: async_sessionmaker = async_session_factory) -> None:
         self.session_factory = session_factory
 
     async def __aenter__(self) -> None:

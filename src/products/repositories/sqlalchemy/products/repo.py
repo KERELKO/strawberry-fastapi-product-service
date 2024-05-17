@@ -12,7 +12,8 @@ class SQLAlchemyProductRepository(AbstractProductRepository):
 
     async def get(self, id: int) -> ProductDTO | None:
         stmt = select(Product).where(Product.id == id)
-        product = await self.session.execute(stmt).scalars().first()
+        result = await self.session.execute(stmt)
+        product = result.scalars().first()
         if not product:
             return None
         return ProductDTO(id=id, title=product.title, description=product.description)
@@ -24,5 +25,5 @@ class SQLAlchemyProductRepository(AbstractProductRepository):
         limit: int = 20,
     ) -> list[ProductDTO]:
         stmt = select(*[getattr(Product, f) for f in fields]).offset(offset).limit(limit)
-        result = self.session.execute(stmt)
+        result = await self.session.execute(stmt)
         return [ProductDTO(id=p.id, title=p.title, description=p.description) for p in result.all()]

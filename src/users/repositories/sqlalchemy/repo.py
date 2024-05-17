@@ -2,11 +2,11 @@ from sqlalchemy import select
 
 from src.common.db.sqlalchemy.models import User
 from src.common.db.sqlalchemy.base import BaseSQLAlchemyRepository
-from src.users.repositories.base import AbstractUserRepository
 from src.users.dto import UserDTO
+from src.users.repositories.base import AbstractUserRepository
 
 
-class SQLAlchemyUserRepository(AbstractUserRepository, BaseSQLAlchemyRepository):
+class SQLAlchemyUserRepository(BaseSQLAlchemyRepository, AbstractUserRepository):
     async def get_list(
         self,
         *fields: tuple[str],

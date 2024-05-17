@@ -3,9 +3,9 @@ from src.products.repositories.base import AbstractReviewUnitOfWork
 from src.products.repositories.sqlalchemy.reviews.repo import SQLAlchemyReviewRepository
 
 
-class SQLAlchemyReviewUnitOfWork(AbstractReviewUnitOfWork, BaseSQLAlchemyUnitOfWork):
-    products: SQLAlchemyReviewRepository
+class SQLAlchemyReviewUnitOfWork(BaseSQLAlchemyUnitOfWork, AbstractReviewUnitOfWork):
+    reviews: SQLAlchemyReviewRepository
 
     async def __aenter__(self):
-        await self.super().__aenter__()
-        self.products = SQLAlchemyReviewRepository(self.session)
+        await super().__aenter__()
+        self.reviews = SQLAlchemyReviewRepository(self.session)
