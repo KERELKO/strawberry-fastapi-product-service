@@ -1,15 +1,12 @@
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.common.db.sqlalchemy import User
+from src.common.db.sqlalchemy.models import User
+from src.common.db.sqlalchemy.base import BaseSQLAlchemyRepository
 from src.users.repositories.base import AbstractUserRepository
 from src.users.dto import UserDTO
 
 
-class SQLAlchemyUserRepository(AbstractUserRepository):
-    def __init__(self, session: AsyncSession) -> None:
-        self.session = session
-
+class SQLAlchemyUserRepository(AbstractUserRepository, BaseSQLAlchemyRepository):
     async def get_list(
         self,
         *fields: tuple[str],

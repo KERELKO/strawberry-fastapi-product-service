@@ -8,6 +8,7 @@ from src.users.dto import UserDTO
 from src.users.repositories.sqlalchemy.uow import AbstractUserUnitOfWork, SQLAlchemyUserUnitOfWork
 
 
+# TODO: remove dependencies
 @dataclass
 class StrawberryUserResolver:
     unit_of_work: AbstractUserUnitOfWork = SQLAlchemyUserUnitOfWork

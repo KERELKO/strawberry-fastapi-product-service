@@ -7,9 +7,9 @@ T = TypeVar('T')
 
 class AbstractRepository[T](ABC):
     @abstractmethod
-    async def get(self, id: int) -> T:
+    async def get(self, id: int) -> T | None:
         ...
 
     @abstractmethod
-    async def get_list(self, offset: int = 0, limit: int = 20, **fields) -> list[T]:
+    async def get_list(self, *fields, offset: int = 0, limit: int = 20) -> list[T]:
         ...

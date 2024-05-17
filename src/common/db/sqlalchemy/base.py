@@ -1,0 +1,24 @@
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+
+class BaseSQLAlchemyRepository:
+    def __init__(self, session: AsyncSession) -> None:
+        self.session = session
+
+
+class BaseSQLAlchemyUnitOfWork:
+    def __init__(self, session_factory: async_sessionmaker) -> None:
+        self.session_factory = session_factory
+
+    async def __aenter__(self) -> None:
+        self.session = self.session_factory()
+
+    async def __aexit__(self, *args) -> None:
+        await self.rollback()
+        await self.session.close()
+
+    async def rollback(self) -> None:
+        await self.session.rollback()
+
+    async def commit(self) -> None:
+        await self.session.commit()

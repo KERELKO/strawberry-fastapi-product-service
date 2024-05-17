@@ -2,7 +2,8 @@ from fastapi import FastAPI
 
 from strawberry.fastapi import GraphQLRouter
 
-from src.common.db.sqlalchemy import engine, Base
+from src.common.db.sqlalchemy.config import engine
+from src.common.db.sqlalchemy.models import Base
 from src.common.graphql_schema import schema
 from src.common.settings import config
 
