@@ -1,8 +1,10 @@
 import strawberry
 
 from src.common.utils.graphql import get_required_fields
-from src.products.graphql.resolvers.review import StrawberryReviewResolver
-from src.products.graphql.schemas import Review
+from src.products.graphql.resolvers.reviews import StrawberryReviewResolver
+from src.products.graphql.resolvers.products import StrawberryProductResolver
+from src.products.graphql.schemas.products import Product
+from src.products.graphql.schemas.reviews import Review
 from src.users.graphql.schemas import User
 from src.users.graphql.resolver import StrawberryUserResolver
 
@@ -41,6 +43,25 @@ class Query:
             limit=limit,
         )
         return reviews
+
+    @strawberry.field
+    async def product(self, id: int, info: strawberry.Info) -> Product | None:
+        product = await StrawberryProductResolver.get(id=id, fields=get_required_fields(info))
+        return product
+
+    @strawberry.field
+    async def products(
+        self,
+        info: strawberry.Info,
+        offset: int = 0,
+        limit: int = 20,
+    ) -> list[Product]:
+        products: list[Product] = await StrawberryProductResolver.get_list(
+            fields=get_required_fields(info),
+            offset=offset,
+            limit=limit,
+        )
+        return products
 
 
 schema = strawberry.Schema(Query)

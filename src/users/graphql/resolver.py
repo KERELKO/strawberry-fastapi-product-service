@@ -19,7 +19,7 @@ class StrawberryUserResolver:
         for field in fields:
             if field.selections:
                 for review_field in field.selections:
-                    list_fields[1].append(review_field.name)
+                    list_fields[1].append(to_snake_case(review_field.name))
             else:
                 list_fields[0].append(to_snake_case(field.name))
         return list_fields

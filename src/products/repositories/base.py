@@ -3,12 +3,11 @@ from src.common.repo import AbstractRepository
 from src.common.uow import AbstractUnitOfWork
 
 
-# TODO: type hints
-class AbstractProductRepository[ProductDTO](AbstractRepository):
+class AbstractProductRepository(AbstractRepository[ProductDTO]):
     ...
 
 
-class AbstractReviewRepository[ReviewDTO](AbstractRepository):
+class AbstractReviewRepository(AbstractRepository[ReviewDTO]):
     ...
 
 

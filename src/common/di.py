@@ -3,7 +3,14 @@ from typing import Any, Type
 
 import punq
 
-from src.products.repositories.base import AbstractReviewRepository, AbstractReviewUnitOfWork
+from src.products.repositories.base import (
+    AbstractProductRepository,
+    AbstractProductUnitOfWork,
+    AbstractReviewRepository,
+    AbstractReviewUnitOfWork,
+)
+from src.products.repositories.sqlalchemy.products.repo import SQLAlchemyProductRepository
+from src.products.repositories.sqlalchemy.products.uow import SQLAlchemyProductUnitOfWork
 from src.products.repositories.sqlalchemy.reviews.repo import SQLAlchemyReviewRepository
 from src.products.repositories.sqlalchemy.reviews.uow import SQLAlchemyReviewUnitOfWork
 from src.users.repositories.base import AbstractUserRepository, AbstractUserUnitOfWork
@@ -30,4 +37,7 @@ class Container:
 
         container.register(AbstractReviewRepository, SQLAlchemyReviewRepository)
         container.register(AbstractReviewUnitOfWork, SQLAlchemyReviewUnitOfWork)
+
+        container.register(AbstractProductRepository, SQLAlchemyProductRepository)
+        container.register(AbstractProductUnitOfWork, SQLAlchemyProductUnitOfWork)
         return container
