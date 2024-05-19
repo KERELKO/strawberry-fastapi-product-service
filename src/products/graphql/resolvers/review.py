@@ -20,6 +20,8 @@ class StrawberryReviewResolver:
         fields: list[Selection],
         offset: int = 0,
         limit: int = 20,
+        user_id: int = None,
+        product_id: int = None,
     ) -> list[schemas.Review]:
         required_fields: list[str] = await cls._get_list_fields(fields)
         uow = Container.resolve(AbstractReviewUnitOfWork)
@@ -27,7 +29,9 @@ class StrawberryReviewResolver:
             reviews = await uow.reviews.get_list(
                 fields=required_fields,
                 offset=offset,
-                limit=limit
+                limit=limit,
+                user_id=user_id,
+                product_id=product_id,
             )
             await uow.commit()
         return [schemas.Review(**r.model_dump()) for r in reviews]
