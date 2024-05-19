@@ -1,3 +1,4 @@
+from typing import Any
 from sqlalchemy import select
 
 from src.common.db.sqlalchemy.models import User
@@ -9,19 +10,26 @@ from src.users.repositories.base import AbstractUserRepository
 class SQLAlchemyUserRepository(BaseSQLAlchemyRepository, AbstractUserRepository):
     async def get_list(
         self,
-        *fields: tuple[str],
+        fields: list[str],
         offset: int = 0,
         limit: int = 20,
     ) -> list[UserDTO]:
-        stmt = select(*[getattr(User, f) for f in fields]).offset(offset).limit(limit)
+        fields_to_select = [getattr(User, f) for f in fields]
+        stmt = select(*fields_to_select).offset(offset).limit(limit)
         result = await self.session.execute(stmt)
-        users: list[tuple[User]] = result.all()
-        return [UserDTO(id=u.id, first_name=u.first_name, last_name=u.last_name) for u in users]
+        list_values: list[tuple[Any]] = result.all()
+        dtos = []
+        for values in list_values:
+            data = {field: value for field, value in zip(fields, values)}
+            dtos.append(UserDTO(**data))
+        return dtos
 
-    async def get(self, id: int) -> UserDTO | None:
-        stmt = select(User).where(User.id == id)
+    async def get(self, id: int, fields: list[str]) -> UserDTO | None:
+        fields_to_select = [getattr(User, f) for f in fields]
+        stmt = select(*fields_to_select).where(User.id == id)
         result = await self.session.execute(stmt)
-        user = result.scalars().first()
-        if not user:
-            return None
-        return UserDTO(id=user.id, first_name=user.first_name, last_name=user.last_name)
+        values = result.first()
+        data = {}
+        for i, field in enumerate(fields):
+            data[field] = values[i]
+        return UserDTO(**data)

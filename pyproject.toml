@@ -11,6 +11,7 @@ strawberry-graphql = {extras = ["fastapi"], version = "^0.229.1"}
 pydantic-settings = "^2.2.1"
 sqlalchemy = "^2.0.30"
 asyncpg = "^0.29.0"
+punq = "^0.7.0"
 
 
 [build-system]

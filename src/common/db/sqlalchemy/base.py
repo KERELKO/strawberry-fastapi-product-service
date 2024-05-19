@@ -1,12 +1,11 @@
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from src.common.repo import AbstractRepository
 from src.common.uow import AbstractUnitOfWork
 
 from .config import async_session_factory
 
 
-class BaseSQLAlchemyRepository(AbstractRepository):
+class BaseSQLAlchemyRepository:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
