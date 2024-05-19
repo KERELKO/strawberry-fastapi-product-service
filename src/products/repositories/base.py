@@ -1,6 +1,6 @@
 from src.products.dto import ProductDTO, ReviewDTO
-from src.common.repo import AbstractRepository
-from src.common.uow import AbstractUnitOfWork
+from src.common.base.repo import AbstractRepository
+from src.common.base.uow import AbstractUnitOfWork
 
 
 class AbstractProductRepository(AbstractRepository[ProductDTO]):

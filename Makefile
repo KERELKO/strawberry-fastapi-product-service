@@ -6,7 +6,10 @@ APP = app
 python:
 	${EXEC} ${APP} python
 
-
 .PHONY: psql
 psql:
 	${EXEC} postgres psql -U postgres -d postgres
+
+.PHONY: bash
+bash:
+	${EXEC} ${APP} bash

@@ -1,5 +1,5 @@
-from src.common.uow import AbstractUnitOfWork
-from src.common.repo import AbstractRepository
+from src.common.base.uow import AbstractUnitOfWork
+from src.common.base.repo import AbstractRepository
 from src.users.dto import UserDTO
 
 

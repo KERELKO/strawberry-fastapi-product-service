@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from src.common.uow import AbstractUnitOfWork
+from src.common.base.uow import AbstractUnitOfWork
 
 from .config import async_session_factory
 
