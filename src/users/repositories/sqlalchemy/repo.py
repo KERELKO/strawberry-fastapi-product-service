@@ -1,4 +1,5 @@
 from typing import Any
+
 from sqlalchemy import Select, select
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 

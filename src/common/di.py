@@ -1,5 +1,5 @@
 from functools import cache
-from typing import Any, Type
+from typing import Type, TypeVar
 
 import punq
 
@@ -18,6 +18,9 @@ from src.users.repositories.sqlalchemy.repo import SQLAlchemyUserRepository
 from src.users.repositories.sqlalchemy.uow import SQLAlchemyUserUnitOfWork
 
 
+T = TypeVar('T')
+
+
 class Container:
     @cache
     @staticmethod
@@ -25,7 +28,7 @@ class Container:
         return Container._init()
 
     @staticmethod
-    def resolve(cls: Type[Any]) -> Any:
+    def resolve(cls: Type[T]) -> T:
         return Container.get().resolve(cls)
 
     @staticmethod
