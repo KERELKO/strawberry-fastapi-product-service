@@ -1,5 +1,6 @@
 from functools import cache
 from typing import Type, TypeVar
+import logging
 
 import punq
 
@@ -34,6 +35,9 @@ class Container:
     @staticmethod
     def _init() -> punq.Container:
         container = punq.Container()
+
+        logger = logging.getLogger('Logger')
+        container.register(logging.Logger, instance=logger)
 
         container.register(AbstractUserRepository, SQLAlchemyUserRepository)
         container.register(AbstractUserUnitOfWork, SQLAlchemyUserUnitOfWork)

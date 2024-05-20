@@ -23,11 +23,10 @@ class StrawberryUserResolver:
         limit: int = 20,
     ) -> list[User]:
         required_fields: list[str] = await StrawberryUserResolver._get_list_fields(fields=fields)
-        user_fields = required_fields[0]
         uow = Container.resolve(AbstractUserUnitOfWork)
         async with uow:
             users: list[UserDTO] = await uow.users.get_list(
-                fields=user_fields, offset=offset, limit=limit,
+                fields=required_fields, offset=offset, limit=limit,
             )
             await uow.commit()
         return [User(**user.model_dump()) for user in users]
