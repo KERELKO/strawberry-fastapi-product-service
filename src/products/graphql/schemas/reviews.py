@@ -11,22 +11,22 @@ class Review(IReview):
     content: str
 
     @strawberry.field
-    async def product(self, info: strawberry.Info) -> IProduct | None:
+    async def product(self, info: strawberry.Info) -> IProduct:
         from src.products.graphql.resolvers.products import StrawberryProductResolver
         required_fields = get_required_fields(info)
         if not self.id:
-            raise IDIsNotProvided()
+            raise IDIsNotProvided('Hint: add field \'id\' to the query schema')
         product = await StrawberryProductResolver.get_by_review_id(
             review_id=self.id, fields=required_fields,
         )
         return product
 
     @strawberry.field
-    async def user(self, info: strawberry.Info) -> IUser | None:
+    async def user(self, info: strawberry.Info) -> IUser:
         from src.users.graphql.resolver import StrawberryUserResolver
         required_fields = get_required_fields(info)
         if not self.id:
-            raise IDIsNotProvided()
+            raise IDIsNotProvided('Hint: add field \'id\' to the query schema')
         user = await StrawberryUserResolver.get_by_review_id(
             review_id=self.id, fields=required_fields,
         )

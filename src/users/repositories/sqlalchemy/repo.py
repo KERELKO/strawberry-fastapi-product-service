@@ -54,9 +54,11 @@ class SQLAlchemyUserRepository(BaseSQLAlchemyRepository, AbstractUserRepository)
 
         return stmt
 
-    async def _execute_query(self, *args, **kwargs) -> list[tuple[Any]]:
+    async def _execute_query(self, *args, first: bool = False, **kwargs) -> list[tuple[Any]]:
         stmt = await self._construct_query(*args, **kwargs)
         result = await self.session.execute(stmt)
+        if first:
+            return result.first()
         return result.all()
 
     async def get_list(
@@ -91,12 +93,10 @@ class SQLAlchemyUserRepository(BaseSQLAlchemyRepository, AbstractUserRepository)
         return UserDTO(**data)
 
     async def get_by_review_id(self, review_id: int, user_fields: list[str]) -> UserDTO:
-        list_values = await self._execute_query(
-            user_fields=user_fields, review_id=review_id,
+        values = await self._execute_query(
+            user_fields=user_fields, review_id=review_id, first=True
         )
-        try:
-            values = list_values[0]
-        except IndexError:
+        if not values:
             raise ObjectDoesNotExistException('User')
         data = {}
         for value_index, field in enumerate(user_fields):

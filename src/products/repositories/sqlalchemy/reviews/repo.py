@@ -3,44 +3,44 @@ from sqlalchemy import Select, select
 
 from src.common.db.sqlalchemy.models import Review
 from src.common.db.sqlalchemy.base import BaseSQLAlchemyRepository
+from src.common.exceptions import ObjectDoesNotExistException
 from src.products.dto import ReviewDTO
 from src.products.repositories.base import AbstractReviewRepository
 
 
-# TODO: Add logger that saves all constructed statements
 class SQLAlchemyReviewRepository(AbstractReviewRepository, BaseSQLAlchemyRepository):
     async def _construct_query(self, fields: list[str], **queries) -> Select:
         fields_to_select = [getattr(Review, f) for f in fields]
+        review_id = queries.get('id', None)
+        product_id = queries.get('product_id', None)
+        user_id = queries.get('user_id', None)
+        offset = queries.get('offset', None)
+        limit = queries.get('limit', None)
         stmt = select(*fields_to_select)
-        if 'id' in queries:
-            return stmt.where(Review.id == queries['id'])
-        user_id = queries['user_id']
-        product_id = queries['product_id']
-        if user_id:
+
+        if review_id is not None:
+            return stmt.where(Review.id == review_id)
+        elif user_id is not None:
             stmt = stmt.where(Review.user_id == user_id)
-        if product_id:
+        elif product_id is not None:
             stmt = stmt.where(Review.product_id == product_id)
-        if 'offset' in queries:
-            stmt = stmt.offset(queries['offset'])
-        if 'limit' in queries:
-            stmt = stmt.limit(queries['limit'])
+        if offset is not None:
+            stmt = stmt.offset(offset)
+        if limit is not None:
+            stmt = stmt.limit(limit)
         return stmt
 
-    async def _execute_query(self, fields: list[str], **queries) -> list[tuple[Any]]:
-        """
-        ## Returns the result.all() of the session.execute(stmt)
-        ### order of the values equals to the order of values passed in the 'fields' arg
-        ### example:
-        ###     if fields = ['id', 'text']
-        ###     returns [(1, 'I like bananas'), (2, 'Who is going to give a job?'), ...]
-        """
-        stmt = await self._construct_query(fields=fields, **queries)
+    async def _execute_query(self, *args, **kwargs) -> list[tuple[Any]]:
+        stmt = await self._construct_query(*args, **kwargs)
         result = await self.session.execute(stmt)
         return result.all()
 
-    async def get(self, id: int, fields: list[str]) -> ReviewDTO | None:
-        list_values = await self._execute_query(fields, id=id)
-        values = list_values[0]
+    async def get(self, id: int, fields: list[str]) -> ReviewDTO:
+        list_values = await self._execute_query(fields=fields, id=id)
+        try:
+            values = list_values[0]
+        except IndexError:
+            raise ObjectDoesNotExistException('Review', object_id=id)
         data = {}
         for i, field in enumerate(fields):
             data[field] = values[i]
