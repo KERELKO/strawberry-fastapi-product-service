@@ -40,3 +40,14 @@ class StrawberryProductResolver:
         if not product:
             return None
         return Product(**product.model_dump())
+
+    @classmethod
+    async def get_by_review_id(cls, review_id: int, fields: list[Selection]) -> Product:
+        required_fields = await cls._get_list_fields(fields)
+        uow = Container.resolve(AbstractProductUnitOfWork)
+        async with uow:
+            product = await uow.products.get_by_review_id(
+                fields=required_fields, review_id=review_id,
+            )
+            await uow.commit()
+        return Product(**product.model_dump())
