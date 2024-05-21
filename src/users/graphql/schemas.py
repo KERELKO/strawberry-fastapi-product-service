@@ -3,7 +3,7 @@ import strawberry
 from src.common.base.graphql.schemas import IUser
 from src.common.utils.graphql import get_required_fields
 from src.products.graphql.resolvers.reviews import StrawberryReviewResolver
-from src.common.base.graphql.schemas import IReview
+from src.products.graphql.schemas.reviews import Review
 
 
 @strawberry.type
@@ -12,7 +12,7 @@ class User(IUser):
     username: str
 
     @strawberry.field
-    def reviews(self, info: strawberry.Info, offset: int = 0, limit: int = 20) -> list[IReview]:
+    def reviews(self, info: strawberry.Info, offset: int = 0, limit: int = 20) -> list[Review]:
         if not self.id:
             return []
         fields = get_required_fields(info)

@@ -1,6 +1,7 @@
 import strawberry
 
 from src.common.base.graphql.schemas import IProduct, IReview, IUser
+from src.common.exceptions import IDIsNotProvided
 from src.common.utils.graphql import get_required_fields
 
 
@@ -8,7 +9,6 @@ from src.common.utils.graphql import get_required_fields
 class Review(IReview):
     id: strawberry.ID
     content: str
-    user_id: strawberry.ID
     product_id: strawberry.ID
 
     @strawberry.field
@@ -24,7 +24,9 @@ class Review(IReview):
     async def user(self, info: strawberry.Info) -> IUser | None:
         from src.users.graphql.resolver import StrawberryUserResolver
         required_fields = get_required_fields(info)
-        if not self.user_id:
-            return None
-        user = await StrawberryUserResolver.get(id=self.user_id, fields=required_fields)
+        if not self.id:
+            raise IDIsNotProvided()
+        user = await StrawberryUserResolver.get_by_review_id(
+            review_id=self.id, fields=required_fields
+        )
         return user

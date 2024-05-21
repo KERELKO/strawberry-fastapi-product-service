@@ -4,7 +4,6 @@ from pydantic import BaseModel
 class ReviewDTO(BaseModel):
     id: int | None = None
     content: str = ''
-    user_id: int | None = None
     product_id: int | None = None
 
 

@@ -42,6 +42,15 @@ class StrawberryUserResolver:
         async with uow:
             user: UserDTO = await uow.users.get(id=id, user_fields=user_fields)
             await uow.commit()
-        if not user:
-            return None
+        return User(**user.model_dump())
+
+    @classmethod
+    async def get_by_review_id(cls, review_id: int, fields: list[Selection]) -> User:
+        uow = Container.resolve(AbstractUserUnitOfWork)
+        user_fields = await StrawberryUserResolver._get_list_fields(fields=fields)
+        async with uow:
+            user: UserDTO = await uow.users.get_by_review_id(
+                review_id=review_id, user_fields=user_fields,
+            )
+            await uow.commit()
         return User(**user.model_dump())
