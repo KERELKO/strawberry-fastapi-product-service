@@ -1,20 +1,13 @@
-from strawberry.utils.str_converters import to_snake_case
 from strawberry.types.nodes import Selection
 
+from src.common.base.graphql.resolvers import BaseStrawberryResolver
 from src.common.di import Container
 from src.users.graphql.schemas import User
 from src.users.dto import UserDTO
 from src.users.repositories.base import AbstractUserUnitOfWork
 
 
-class StrawberryUserResolver:
-    @classmethod
-    async def _get_list_fields(cls, fields: list[Selection]) -> list[str]:
-        list_fields: list[str] = []
-        for field in fields:
-            list_fields.append(to_snake_case(field.name))
-        return list_fields
-
+class StrawberryUserResolver(BaseStrawberryResolver):
     @classmethod
     async def get_list(
         cls,

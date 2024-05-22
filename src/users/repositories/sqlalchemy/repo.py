@@ -14,13 +14,9 @@ class SQLAlchemyUserRepository(BaseSQLAlchemyRepository, AbstractUserRepository)
     async def _get_model_fields(
         self,
         user_fields: list[str],
-        review_fields: list[str] = None
     ) -> tuple[list[InstrumentedAttribute]]:
         user_fields = [getattr(User, f) for f in user_fields]
-        review_fields = []
-        if review_fields:
-            review_fields = [getattr(Review, f) for f in review_fields]
-        return user_fields, review_fields
+        return user_fields
 
     async def _join_reviews(self, stmt: Select) -> Select:
         stmt = stmt.join(Review, onclause=User.id == Review.user_id)
@@ -29,24 +25,16 @@ class SQLAlchemyUserRepository(BaseSQLAlchemyRepository, AbstractUserRepository)
     async def _construct_query(
         self,
         user_fields: list[str],
-        review_fields: list[str] = None,
         **queries,
     ) -> Select:
         user_id = queries.get('id', None)
-        review_id = queries.get('review_id', None)
         offset = queries.get('offset', None)
         limit = queries.get('limit', None)
-        fields_to_select, review_fields = await self._get_model_fields(user_fields, review_fields)
-        fields_to_select.extend(review_fields)
+        fields_to_select = await self._get_model_fields(user_fields)
         stmt = select(*fields_to_select)
 
-        if review_fields or review_id:
-            stmt = await self._join_reviews(stmt)
         if user_id is not None:
             stmt = stmt.where(User.id == user_id)
-        elif review_id is not None:
-            stmt = stmt.where(Review.user_id == review_id)
-
         if offset is not None:
             stmt = stmt.offset(offset)
         if limit is not None:
@@ -78,10 +66,9 @@ class SQLAlchemyUserRepository(BaseSQLAlchemyRepository, AbstractUserRepository)
         self,
         id: int,
         user_fields: list[str],
-        review_fields: list[str] = None,
     ) -> UserDTO:
         list_values = await self._execute_query(
-            user_fields=user_fields, review_fields=review_fields, id=id,
+            user_fields=user_fields, id=id,
         )
         try:
             values = list_values[0]
