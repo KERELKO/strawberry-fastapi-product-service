@@ -26,3 +26,10 @@ class Product(IProduct):
             fields=fields, product_id=self.id, offset=offset, limit=limit,
         )
         return reviews
+
+
+@strawberry.type
+class ProductMutations:
+    @strawberry.mutation
+    def add_product(self) -> IProduct:
+        ...

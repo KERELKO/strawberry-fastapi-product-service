@@ -1,10 +1,12 @@
 from fastapi import FastAPI
 
+import strawberry
 from strawberry.fastapi import GraphQLRouter
 
 from src.common.db.sqlalchemy.config import engine
 from src.common.db.sqlalchemy.models import Base
-from src.common.graphql.query import schema
+from src.common.graphql.query import Query
+from src.common.graphql.mutations import Mutation
 from src.common.middlewares import ExecutingTimeMiddleware
 from src.common.settings import config
 
@@ -20,7 +22,9 @@ async def drop_db():
 
 
 def graphql_app() -> GraphQLRouter:
+    schema = strawberry.Schema(query=Query, mutation=Mutation)
     graphql = GraphQLRouter(schema)
+
     return graphql
 
 

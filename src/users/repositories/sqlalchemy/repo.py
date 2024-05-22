@@ -22,7 +22,7 @@ class SQLAlchemyUserRepository(BaseSQLAlchemyRepository, AbstractUserRepository)
         stmt = stmt.join(Review, onclause=User.id == Review.user_id)
         return stmt
 
-    async def _construct_query(
+    async def _construct_select_query(
         self,
         user_fields: list[str],
         **queries,
@@ -43,7 +43,7 @@ class SQLAlchemyUserRepository(BaseSQLAlchemyRepository, AbstractUserRepository)
         return stmt
 
     async def _execute_query(self, *args, first: bool = False, **kwargs) -> list[tuple[Any]]:
-        stmt = await self._construct_query(*args, **kwargs)
+        stmt = await self._construct_select_query(*args, **kwargs)
         result = await self.session.execute(stmt)
         if first:
             return result.first()

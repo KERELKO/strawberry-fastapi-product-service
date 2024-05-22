@@ -31,3 +31,10 @@ class Review(IReview):
             review_id=self.id, fields=required_fields,
         )
         return user
+
+
+@strawberry.type
+class ReviewMutations:
+    @strawberry.mutation
+    def add_review(self) -> IReview:
+        ...
