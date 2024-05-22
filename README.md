@@ -1,4 +1,4 @@
-# Strawberry GraphQL Product Service
+# Product Service
 
 ## Description
 - __Simple product service, built with [Strawberry](https://strawberry.rocks/) and [FastAPI](https://fastapi.tiangolo.com/)__  
@@ -26,7 +26,7 @@
 
 1. Install the project with
 ```
-git clone
+git clone https://github.com/KERELKO/Strawberry-fastapi-product-service
 ```
 2. Move to directory with __Dockerfile__ and create **.env** file based on **.env.example**
 ```
@@ -139,3 +139,4 @@ If you'd like to contribute to this project, feel free to fork the repository an
 - [ ] Solve N+1 problem in queries
 - [ ] Tests
 - [ ] Mutations
+- [ ] Logging
