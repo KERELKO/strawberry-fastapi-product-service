@@ -1,5 +1,141 @@
-# Fastapi-Graphql-product-service
-Simple FastAPI+GraphQL product service with SQLAlchemy(ORM) and Postgresql(DB), provides flexible retriving of the entities
+# Strawberry GraphQL Product Service
+
+## Description
+- __Simple product service, built with [Strawberry](https://strawberry.rocks/) and [FastAPI](https://fastapi.tiangolo.com/)__  
+- __[Strawberry](https://strawberry.rocks/) is a developer friendly [GraphQL](https://graphql.org/) library for Python, designed for modern development.__  
+- __[GraphQL](https://graphql.org/) is a query language for APIs and a runtime for fulfilling queries with existing data. GraphQL provides a complete and understandable description of the data in API, gives clients the power to ask for exactly what they need and nothing more, makes it easier to evolve APIs over time, and enables powerful developer tools.__
+
+## Brief overview
+
 ![image](https://github.com/KERELKO/Fastapi-Graphql-product-service/assets/89779202/58726397-3f1a-4a33-8dc8-e065c4e262c9)
+
+## Technlogies
+- [FastAPI](https://fastapi.tiangolo.com/)
+- [Postgresql](https://www.postgresql.org/)
+- [Docker](https://www.docker.com/)
+- [SQLAlchemy](https://www.sqlalchemy.org/)
+- [Strawberry](https://strawberry.rocks/)
+- [Alembic](https://alembic.sqlalchemy.org/en/latest/)
+- [GraphQL](https://graphql.org/)
+
+## How To Use
+### Requirements
+- Docker
+- Docker-compose
+- Maketools
+
+1. Install the project with
+```
+git clone
+```
+2. Move to directory with __Dockerfile__ and create **.env** file based on **.env.example**
+```
+touch .env
+cat .env.example > .env
+```
+3. In the same directory run
+```
+docker compose up
+```
+4. When project is running you need to apply migrations
+```
+make python
+>>> from src.main import create_db
+>>> import asyncio
+>>> asyncio.run(create_db())
+```
+5. Go to http://localhost:8000/graphql and make your queries!
+
+![image](https://github.com/KERELKO/Fastapi-Graphql-product-service/assets/89779202/0546bd5c-2e63-4995-a77f-e776faf8ba6f)
+
+## Contributing
+
+If you'd like to contribute to this project, feel free to fork the repository and submit a pull request. Please follow the existing code style and ensure that all tests pass before submitting your changes.
+
+## Project structure
+```
+.
+├── alembic
+│   ├── env.py
+│   ├── README
+│   ├── script.py.mako
+│   └── versions/
+├── alembic.ini
+├── docker-compose.yaml
+├── Dockerfile
+├── LICENSE
+├── Makefile
+├── poetry.lock
+├── pyproject.toml
+├── README.md
+├── src
+│   ├── common
+│   │   ├── base
+│   │   │   ├── graphql
+│   │   │   │   ├── __init__.py
+│   │   │   │   └── schemas.py
+│   │   │   ├── __init__.py
+│   │   │   ├── repo.py
+│   │   │   └── uow.py
+│   │   ├── constants.py
+│   │   ├── db
+│   │   │   ├── __init__.py
+│   │   │   └── sqlalchemy
+│   │   │       ├── base.py
+│   │   │       ├── config.py
+│   │   │       ├── __init__.py
+│   │   │       └── models.py
+│   │   ├── di.py
+│   │   ├── exceptions.py
+│   │   ├── graphql_schema.py
+│   │   ├── __init__.py
+│   │   ├── logging
+│   │   │   ├── formatters.py
+│   │   │   ├── handlers.py
+│   │   │   ├── __init__.py
+│   │   │   └── loggers.py
+│   │   ├── middlewares.py
+│   │   ├── settings.py
+│   │   └── utils
+│   │       ├── graphql.py
+│   │       └── __init__.py
+│   ├── __init__.py
+│   ├── main.py
+│   ├── products
+│   │   ├── dto.py
+│   │   ├── graphql
+│   │   │   ├── __init__.py
+│   │   │   ├── resolvers
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── products.py
+│   │   │   │   └── reviews.py
+│   │   │   └── schemas
+│   │   │       ├── __init__.py
+│   │   │       ├── products.py
+│   │   │       └── reviews.py
+│   │   └── repositories
+│   │       ├── base.py
+│   │       └── sqlalchemy
+│   │           ├── products
+│   │           └── reviews
+│   └── users
+│       ├── dto.py
+│       ├── graphql
+│       │   ├── __init__.py
+│       │   ├── resolver.py
+│       │   └── schemas.py
+│       ├── __init__.py
+│       └── repositories
+│           ├── base.py
+│           ├── __init__.py
+│           └── sqlalchemy
+│               ├── __init__.py
+│               ├── repo.py
+│               └── uow.py
+└── tests
+```
+
 ## TODO
-- sys:1: SAWarning: SELECT statement has a cartesian product between FROM element(s) "users", "reviews" and FROM element        "products".  Apply join condition(s) between each element to resolve.
+- [ ] Solve N+1 problem in queries
+- [ ] Tests
+- [ ] Mutations
