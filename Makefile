@@ -1,4 +1,5 @@
 EXEC = docker exec -it
+DB = postgres
 APP = app
 
 

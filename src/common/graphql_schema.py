@@ -18,8 +18,8 @@ class Query:
         return user
 
     @strawberry.field
-    async def users(self, info: strawberry.Info, offset: int = 0, limit: int = 20) -> list[IUser]:
-        users: list[IUser] = await StrawberryUserResolver.get_list(
+    def users(self, info: strawberry.Info, offset: int = 0, limit: int = 20) -> list[IUser]:
+        users: list[IUser] = StrawberryUserResolver.get_list(
             fields=get_required_fields(info),
             offset=offset,
             limit=limit,

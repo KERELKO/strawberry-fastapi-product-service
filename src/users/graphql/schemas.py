@@ -12,7 +12,12 @@ class User(IUser):
     username: str
 
     @strawberry.field
-    def reviews(self, info: strawberry.Info, offset: int = 0, limit: int = 20) -> list[Review]:
+    def reviews(
+        self,
+        info: strawberry.Info,
+        offset: int = 0,
+        limit: int = 20,
+    ) -> list[Review]:
         if not self.id:
             return []
         fields = get_required_fields(info)
