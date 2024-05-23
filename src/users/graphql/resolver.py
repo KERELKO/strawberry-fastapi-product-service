@@ -2,7 +2,8 @@ from strawberry.types.nodes import Selection
 
 from src.common.base.graphql.resolvers import BaseStrawberryResolver
 from src.common.di import Container
-from src.users.graphql.schemas import User
+from src.users.graphql.schemas.inputs import UserInput, UpdateUserInput
+from src.users.graphql.schemas.query import User
 from src.users.dto import UserDTO
 from src.users.repositories.base import AbstractUserUnitOfWork
 
@@ -47,3 +48,32 @@ class StrawberryUserResolver(BaseStrawberryResolver):
             )
             await uow.commit()
         return User(**user.model_dump())
+
+    @classmethod
+    async def create(cls, input: UserInput) -> User:
+        dto = UserDTO(**input.to_dict())
+        uow = Container.resolve(AbstractUserUnitOfWork)
+        async with uow:
+            new_user: UserDTO = await uow.users.create(dto=dto)
+        return User(**new_user.model_dump())
+
+    @classmethod
+    async def update(cls, id: int, input: UpdateUserInput) -> User:
+        dto = UserDTO(**input.to_dict())
+        uow = Container.resolve(AbstractUserUnitOfWork)
+        async with uow:
+            updated_user: UserDTO = await uow.users.update(dto=dto, id=id)
+            await uow.commit()
+        return User(**updated_user.model_dump())
+
+    @classmethod
+    async def delete(cls, id: int) -> bool:
+        uow = Container.resolve(AbstractUserUnitOfWork)
+        async with uow:
+            try:
+                is_deleted = await uow.users.delete(id=id)
+            except Exception as e:
+                print(e)
+                return False
+            await uow.commit()
+        return is_deleted

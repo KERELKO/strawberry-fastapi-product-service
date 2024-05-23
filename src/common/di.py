@@ -47,4 +47,5 @@ class Container:
 
         container.register(AbstractProductRepository, SQLAlchemyProductRepository)
         container.register(AbstractProductUnitOfWork, SQLAlchemyProductUnitOfWork)
+
         return container

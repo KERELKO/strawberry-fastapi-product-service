@@ -6,7 +6,7 @@ from src.products.graphql.resolvers.products import StrawberryProductResolver
 from src.products.graphql.schemas.products import Product
 from src.products.graphql.schemas.reviews import Review
 from src.users.graphql.resolver import StrawberryUserResolver
-from src.users.graphql.schemas import User
+from src.users.graphql.schemas.query import User
 
 
 @strawberry.type

@@ -7,7 +7,7 @@ from src.common.settings import config
 
 engine = create_async_engine(config.postgres_connection_string)
 async_session_factory = async_sessionmaker(
-    engine, class_=AsyncSession, expire_on_commit=True
+    engine, class_=AsyncSession, expire_on_commit=False
 )
 
 if config.LISTEN_SQL_QUERIES:

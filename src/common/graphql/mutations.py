@@ -2,7 +2,7 @@ import strawberry
 
 from src.products.graphql.schemas.products import ProductMutations
 from src.products.graphql.schemas.reviews import ReviewMutations
-from src.users.graphql.schemas import UserMutations
+from src.users.graphql.schemas.mutations import UserMutations
 
 
 @strawberry.type

@@ -1,6 +1,6 @@
 from typing import Any
 
-from sqlalchemy import Select, select
+import sqlalchemy as sql
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 
 from src.common.db.sqlalchemy.models import Review, User
@@ -18,7 +18,7 @@ class SQLAlchemyUserRepository(BaseSQLAlchemyRepository, AbstractUserRepository)
         user_fields = [getattr(User, f) for f in user_fields]
         return user_fields
 
-    async def _join_reviews(self, stmt: Select) -> Select:
+    async def _join_reviews(self, stmt: sql.Select) -> sql.Select:
         stmt = stmt.join(Review, onclause=User.id == Review.user_id)
         return stmt
 
@@ -26,12 +26,12 @@ class SQLAlchemyUserRepository(BaseSQLAlchemyRepository, AbstractUserRepository)
         self,
         user_fields: list[str],
         **queries,
-    ) -> Select:
+    ) -> sql.Select:
         user_id = queries.get('id', None)
         offset = queries.get('offset', None)
         limit = queries.get('limit', None)
         fields_to_select = await self._get_model_fields(user_fields)
-        stmt = select(*fields_to_select)
+        stmt = sql.select(*fields_to_select)
 
         if user_id is not None:
             stmt = stmt.where(User.id == user_id)
@@ -89,3 +89,38 @@ class SQLAlchemyUserRepository(BaseSQLAlchemyRepository, AbstractUserRepository)
         for value_index, field in enumerate(user_fields):
             data[field] = values[value_index]
         return UserDTO(**data)
+
+    async def create(self, dto: UserDTO) -> UserDTO:
+        values = dto.model_dump()
+        new_user = User(**values)
+        self.session.add(new_user)
+        await self.session.commit()
+        dto.id = new_user.id
+        return dto
+
+    async def update(self, id: int, dto: UserDTO) -> UserDTO:
+        values = {}
+        for field, val in dto.model_dump().items():
+            if field in ['id']:
+                continue
+            values[field] = val
+        stmt = (
+            sql.update(User)
+            .where(User.id == id)
+            .values(**values)
+            .returning(User)
+        )
+        result = await self.session.execute(stmt)
+        updated_user = result.scalar_one()
+        if not updated_user:
+            raise ObjectDoesNotExistException('User', object_id=id)
+        return UserDTO(**updated_user.as_dict())
+
+    async def delete(self, id: int) -> bool:
+        stmt = sql.select(User).where(User.id == id)
+        result = await self.session.execute(stmt)
+        user = result.scalar_one()
+        if not user:
+            raise ObjectDoesNotExistException('User', object_id=id)
+        await self.session.delete(user)
+        return True

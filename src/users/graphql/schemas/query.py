@@ -23,33 +23,8 @@ class User(IUser):
         return reviews
 
 
-@strawberry.input
-class UserInput:
-    username: str
-
-
-@strawberry.input
-class UpdateUserInput:
-    username: str
-
-
 @strawberry.type
 class DeletedUser:
     success: bool
     id: strawberry.ID
     message: str | None = None
-
-
-@strawberry.type
-class UserMutations:
-    @strawberry.mutation
-    def add_user(self, input: UserInput) -> IUser:
-        return User(id="1", username=input.username)
-
-    @strawberry.mutation
-    def update_user(self, input: UpdateUserInput) -> IUser:
-        return User(id="1", username=input.username)
-
-    @strawberry.mutation
-    def delete_user(self, id: strawberry.ID) -> DeletedUser:
-        return DeletedUser(id=id, success=True, message='User was deleted successfully!')
