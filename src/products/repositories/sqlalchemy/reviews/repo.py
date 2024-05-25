@@ -1,22 +1,25 @@
 from typing import Any
-from sqlalchemy import Select, select
+
+import sqlalchemy as sql
 
 from src.common.db.sqlalchemy.models import Review
 from src.common.db.sqlalchemy.base import BaseSQLAlchemyRepository
 from src.common.exceptions import ObjectDoesNotExistException
 from src.products.dto import ReviewDTO
-from src.products.repositories.base import AbstractReviewRepository
 
 
-class SQLAlchemyReviewRepository(AbstractReviewRepository, BaseSQLAlchemyRepository):
-    async def _construct_query(self, fields: list[str], **queries) -> Select:
+class SQLAlchemyReviewRepository(BaseSQLAlchemyRepository):
+    class Meta:
+        model = Review
+
+    async def _construct_query(self, fields: list[str], **queries) -> sql.Select:
         fields_to_select = [getattr(Review, f) for f in fields]
         review_id = queries.get('id', None)
         product_id = queries.get('product_id', None)
         user_id = queries.get('user_id', None)
         offset = queries.get('offset', None)
         limit = queries.get('limit', None)
-        stmt = select(*fields_to_select)
+        stmt = sql.select(*fields_to_select)
 
         if review_id is not None:
             return stmt.where(Review.id == review_id)

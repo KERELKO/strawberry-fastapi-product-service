@@ -4,7 +4,7 @@ import strawberry.mutation
 from src.common.base.graphql.schemas import IUser
 from src.common.utils.graphql import get_required_fields
 from src.products.graphql.resolvers.reviews import StrawberryReviewResolver
-from src.products.graphql.schemas.reviews import Review
+from src.products.graphql.schemas.reviews.queries import Review
 
 
 @strawberry.type

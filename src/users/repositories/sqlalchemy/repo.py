@@ -7,10 +7,9 @@ from src.common.db.sqlalchemy.models import Review, User
 from src.common.db.sqlalchemy.base import BaseSQLAlchemyRepository
 from src.common.exceptions import ObjectDoesNotExistException
 from src.users.dto import UserDTO
-from src.users.repositories.base import AbstractUserRepository
 
 
-class SQLAlchemyUserRepository(BaseSQLAlchemyRepository, AbstractUserRepository):
+class SQLAlchemyUserRepository(BaseSQLAlchemyRepository):
     async def _get_model_fields(
         self,
         user_fields: list[str],

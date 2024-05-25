@@ -1,7 +1,7 @@
 import strawberry
 
-from src.products.graphql.schemas.products import ProductMutations
-from src.products.graphql.schemas.reviews import ReviewMutations
+from src.products.graphql.schemas.products.mutations import ProductMutations
+from src.products.graphql.schemas.reviews.mutations import ReviewMutations
 from src.users.graphql.schemas.mutations import UserMutations
 
 

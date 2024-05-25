@@ -9,6 +9,8 @@ from src.common.utils.graphql import get_required_fields
 class Review(IReview):
     id: strawberry.ID
     content: str
+    _user_id: strawberry.ID | None = None
+    _product_id: strawberry.ID | None = None
 
     @strawberry.field
     async def product(self, info: strawberry.Info) -> IProduct:
@@ -31,10 +33,3 @@ class Review(IReview):
             review_id=self.id, fields=required_fields,
         )
         return user
-
-
-@strawberry.type
-class ReviewMutations:
-    @strawberry.mutation
-    def add_review(self) -> IReview:
-        ...

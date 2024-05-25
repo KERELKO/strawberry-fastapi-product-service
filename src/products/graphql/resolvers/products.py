@@ -2,7 +2,7 @@ from strawberry.types.nodes import Selection
 
 from src.common.base.graphql.resolvers import BaseStrawberryResolver
 from src.common.di import Container
-from src.products.graphql.schemas.products import Product
+from src.products.graphql.schemas.products.queries import Product
 from src.products.repositories.base import AbstractProductUnitOfWork
 
 

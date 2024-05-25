@@ -3,10 +3,10 @@ import strawberry
 from src.common.utils.graphql import get_required_fields
 from src.products.graphql.resolvers.reviews import StrawberryReviewResolver
 from src.products.graphql.resolvers.products import StrawberryProductResolver
-from src.products.graphql.schemas.products import Product
-from src.products.graphql.schemas.reviews import Review
+from src.products.graphql.schemas.products.queries import Product
+from src.products.graphql.schemas.reviews.queries import Review
 from src.users.graphql.resolver import StrawberryUserResolver
-from src.users.graphql.schemas.query import User
+from src.users.graphql.schemas.queries import User
 
 
 @strawberry.type

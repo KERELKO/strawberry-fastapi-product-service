@@ -4,11 +4,13 @@ from sqlalchemy import Select, select
 from src.common.db.sqlalchemy.base import BaseSQLAlchemyRepository
 from src.common.db.sqlalchemy.models import Product, Review
 from src.products.dto import ProductDTO
-from src.products.repositories.base import AbstractProductRepository
 from src.common.exceptions import ObjectDoesNotExistException
 
 
-class SQLAlchemyProductRepository(AbstractProductRepository, BaseSQLAlchemyRepository):
+class SQLAlchemyProductRepository(BaseSQLAlchemyRepository):
+    class Meta:
+        model = Product
+
     async def _join_reviews(self, stmt: Select) -> Select:
         stmt = stmt.join(Review, onclause=Product.id == Review.product_id)
         return stmt

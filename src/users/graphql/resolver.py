@@ -3,7 +3,7 @@ from strawberry.types.nodes import Selection
 from src.common.base.graphql.resolvers import BaseStrawberryResolver
 from src.common.di import Container
 from src.users.graphql.schemas.inputs import UserInput, UpdateUserInput
-from src.users.graphql.schemas.query import User
+from src.users.graphql.schemas.queries import User
 from src.users.dto import UserDTO
 from src.users.repositories.base import AbstractUserUnitOfWork
 
@@ -70,10 +70,6 @@ class StrawberryUserResolver(BaseStrawberryResolver):
     async def delete(cls, id: int) -> bool:
         uow = Container.resolve(AbstractUserUnitOfWork)
         async with uow:
-            try:
-                is_deleted = await uow.users.delete(id=id)
-            except Exception as e:
-                print(e)
-                return False
+            is_deleted = await uow.users.delete(id=id)
             await uow.commit()
         return is_deleted
