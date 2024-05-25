@@ -1,6 +1,6 @@
 import strawberry
 
-from src.common.base.graphql.schemas import IProduct, IReview, IUser
+from src.common.base.graphql.schemas import IDeleted, IProduct, IReview, IUser
 from src.common.exceptions import IDIsNotProvided
 from src.common.utils.graphql import get_required_fields
 
@@ -33,3 +33,10 @@ class Review(IReview):
             review_id=self.id, fields=required_fields,
         )
         return user
+
+
+@strawberry.type
+class DeletedReview(IDeleted):
+    id: strawberry.ID
+    success: bool
+    message: str | None = None

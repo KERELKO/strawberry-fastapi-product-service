@@ -15,3 +15,14 @@ class ReviewInput:
             'product_id': self.product_id,
         }
         return data
+
+
+@strawberry.input
+class UpdateReviewInput:
+    content: str
+
+    def to_dict(self) -> dict[str, Any]:
+        data = {
+            'content': self.content,
+        }
+        return data

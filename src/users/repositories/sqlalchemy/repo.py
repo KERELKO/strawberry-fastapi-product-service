@@ -10,6 +10,9 @@ from src.users.dto import UserDTO
 
 
 class SQLAlchemyUserRepository(BaseSQLAlchemyRepository):
+    class Meta:
+        model = User
+
     async def _get_model_fields(
         self,
         user_fields: list[str],
@@ -88,38 +91,3 @@ class SQLAlchemyUserRepository(BaseSQLAlchemyRepository):
         for value_index, field in enumerate(user_fields):
             data[field] = values[value_index]
         return UserDTO(**data)
-
-    async def create(self, dto: UserDTO) -> UserDTO:
-        values = dto.model_dump()
-        new_user = User(**values)
-        self.session.add(new_user)
-        await self.session.commit()
-        dto.id = new_user.id
-        return dto
-
-    async def update(self, id: int, dto: UserDTO) -> UserDTO:
-        values = {}
-        for field, val in dto.model_dump().items():
-            if field in ['id']:
-                continue
-            values[field] = val
-        stmt = (
-            sql.update(User)
-            .where(User.id == id)
-            .values(**values)
-            .returning(User)
-        )
-        result = await self.session.execute(stmt)
-        updated_user = result.scalar_one()
-        if not updated_user:
-            raise ObjectDoesNotExistException('User', object_id=id)
-        return UserDTO(**updated_user.as_dict())
-
-    async def delete(self, id: int) -> bool:
-        stmt = sql.select(User).where(User.id == id)
-        result = await self.session.execute(stmt)
-        user = result.scalar_one()
-        if not user:
-            raise ObjectDoesNotExistException('User', object_id=id)
-        await self.session.delete(user)
-        return True

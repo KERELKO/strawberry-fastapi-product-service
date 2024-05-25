@@ -18,3 +18,8 @@ class IProduct:
     id: strawberry.ID
     title: str
     description: str
+
+
+@strawberry.interface
+class IDeleted:
+    success: bool

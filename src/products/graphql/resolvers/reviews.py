@@ -3,8 +3,8 @@ from strawberry.types.nodes import Selection
 from src.common.base.graphql.resolvers import BaseStrawberryResolver
 from src.common.di import Container
 from src.products.dto import ReviewDTO
-from src.products.graphql.schemas.reviews.inputs import ReviewInput
-from src.products.graphql.schemas.reviews.queries import Review
+from src.products.graphql.schemas.reviews.inputs import ReviewInput, UpdateReviewInput
+from src.products.graphql.schemas.reviews.queries import DeletedReview, Review
 from src.products.repositories.base import AbstractReviewUnitOfWork
 
 
@@ -52,3 +52,23 @@ class StrawberryReviewResolver(BaseStrawberryResolver):
         data['_product_id'] = data.pop('product_id')
         data['_user_id'] = data.pop('user_id')
         return Review(**data)
+
+    @classmethod
+    async def update(cls, id: int, input: UpdateReviewInput) -> Review:
+        dto = ReviewDTO(**input.to_dict())
+        uow = Container.resolve(AbstractReviewUnitOfWork)
+        async with uow:
+            updated_review: ReviewDTO = await uow.reviews.update(dto=dto, id=id)
+            await uow.commit()
+        data = updated_review.model_dump()
+        data['_product_id'] = data.pop('product_id')
+        data['_user_id'] = data.pop('user_id')
+        return Review(**data)
+
+    @classmethod
+    async def delete(cls, id: int) -> DeletedReview:
+        uow = Container.resolve(AbstractReviewUnitOfWork)
+        async with uow:
+            is_deleted = await uow.reviews.delete(id=id)
+            await uow.commit()
+        return DeletedReview(success=is_deleted, id=id)

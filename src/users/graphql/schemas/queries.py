@@ -1,7 +1,7 @@
 import strawberry
 import strawberry.mutation
 
-from src.common.base.graphql.schemas import IUser
+from src.common.base.graphql.schemas import IDeleted, IUser
 from src.common.utils.graphql import get_required_fields
 from src.products.graphql.resolvers.reviews import StrawberryReviewResolver
 from src.products.graphql.schemas.reviews.queries import Review
@@ -24,7 +24,7 @@ class User(IUser):
 
 
 @strawberry.type
-class DeletedUser:
+class DeletedUser(IDeleted):
     success: bool
     id: strawberry.ID
     message: str | None = None

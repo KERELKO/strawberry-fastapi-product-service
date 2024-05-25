@@ -2,7 +2,9 @@ from strawberry.types.nodes import Selection
 
 from src.common.base.graphql.resolvers import BaseStrawberryResolver
 from src.common.di import Container
-from src.products.graphql.schemas.products.queries import Product
+from src.products.dto import ProductDTO
+from src.products.graphql.schemas.products.inputs import ProductInput, UpdateProductInput
+from src.products.graphql.schemas.products.queries import DeletedProduct, Product
 from src.products.repositories.base import AbstractProductUnitOfWork
 
 
@@ -44,3 +46,28 @@ class StrawberryProductResolver(BaseStrawberryResolver):
             )
             await uow.commit()
         return Product(**product.model_dump())
+
+    @classmethod
+    async def create(cls, input: ProductInput) -> Product:
+        dto = ProductDTO(**input.to_dict())
+        uow = Container.resolve(AbstractProductUnitOfWork)
+        async with uow:
+            new_product: ProductDTO = await uow.products.create(dto=dto)
+        return Product(**new_product.model_dump())
+
+    @classmethod
+    async def update(cls, id: int, input: UpdateProductInput) -> Product:
+        dto = ProductDTO(**input.to_dict())
+        uow = Container.resolve(AbstractProductUnitOfWork)
+        async with uow:
+            updated_product: ProductDTO = await uow.products.update(dto=dto, id=id)
+            await uow.commit()
+        return Product(**updated_product.model_dump())
+
+    @classmethod
+    async def delete(cls, id: int) -> DeletedProduct:
+        uow = Container.resolve(AbstractProductUnitOfWork)
+        async with uow:
+            is_deleted = await uow.products.delete(id=id)
+            await uow.commit()
+        return DeletedProduct(success=is_deleted, id=id)

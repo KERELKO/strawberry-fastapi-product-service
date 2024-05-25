@@ -8,13 +8,13 @@ from src.users.graphql.schemas.mutations import UserMutations
 @strawberry.type
 class Mutation:
     @strawberry.field
-    def user(self) -> UserMutations:
+    def users(self) -> UserMutations:
         return UserMutations()
 
     @strawberry.field
-    def product(self) -> ProductMutations:
+    def products(self) -> ProductMutations:
         return ProductMutations()
 
     @strawberry.field
-    def review(self) -> ReviewMutations:
+    def reviews(self) -> ReviewMutations:
         return ReviewMutations()

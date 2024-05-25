@@ -1,4 +1,5 @@
 from typing import Any, Type, TypeVar
+
 import sqlalchemy as sql
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -35,12 +36,13 @@ class MetaSQLAlchemyRepository(type):
         dct: dict[str, Any]
     ):
         def create_method(model: Type[SQLAlchemyModelType]):
-            async def create(self, dto: TypeDTO) -> TypeDTO:
+            async def create(self, dto: TypeDTO, commit_after_creation: bool = True) -> TypeDTO:
                 values = dto.model_dump()
                 new_entity = model(**values)
                 self.session.add(new_entity)
-                await self.session.commit()
-                dto.id = new_entity.id
+                if commit_after_creation:
+                    await self.session.commit()
+                    dto.id = new_entity.id
                 return dto
             return create
 

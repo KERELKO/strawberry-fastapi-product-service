@@ -1,6 +1,6 @@
 import strawberry
 
-from src.common.base.graphql.schemas import IProduct
+from src.common.base.graphql.schemas import IDeleted, IProduct
 from src.common.utils.graphql import get_required_fields
 from src.products.graphql.resolvers.reviews import StrawberryReviewResolver
 from src.products.graphql.schemas.reviews.queries import Review
@@ -26,3 +26,10 @@ class Product(IProduct):
             fields=fields, product_id=self.id, offset=offset, limit=limit,
         )
         return reviews
+
+
+@strawberry.type
+class DeletedProduct(IDeleted):
+    id: strawberry.ID
+    success: bool
+    message: str | None = None
