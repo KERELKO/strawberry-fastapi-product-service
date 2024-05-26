@@ -2,6 +2,7 @@ from strawberry.types.nodes import Selection
 
 from src.common.base.graphql.resolvers import BaseStrawberryResolver
 from src.common.di import Container
+from src.common.exceptions import ObjectDoesNotExistException
 from src.users.graphql.schemas.inputs import UserInput, UpdateUserInput
 from src.users.graphql.schemas.queries import User
 from src.users.dto import UserDTO
@@ -34,18 +35,24 @@ class StrawberryUserResolver(BaseStrawberryResolver):
         uow = Container.resolve(AbstractUserUnitOfWork)
         user_fields = await cls._get_list_fields(fields=fields)
         async with uow:
-            user: UserDTO = await uow.users.get(id=id, user_fields=user_fields)
+            try:
+                user: UserDTO = await uow.users.get(id=id, fields=user_fields)
+            except ObjectDoesNotExistException:
+                return None
             await uow.commit()
         return User(**user.model_dump())
 
     @classmethod
-    async def get_by_review_id(cls, review_id: int, fields: list[Selection]) -> User:
+    async def get_by_review_id(cls, review_id: int, fields: list[Selection]) -> User | None:
         uow = Container.resolve(AbstractUserUnitOfWork)
         user_fields = await cls._get_list_fields(fields=fields)
         async with uow:
-            user: UserDTO = await uow.users.get_by_review_id(
-                review_id=review_id, user_fields=user_fields,
-            )
+            try:
+                user: UserDTO = await uow.users.get_by_review_id(
+                    review_id=review_id, fields=user_fields,
+                )
+            except ObjectDoesNotExistException:
+                return None
             await uow.commit()
         return User(**user.model_dump())
 

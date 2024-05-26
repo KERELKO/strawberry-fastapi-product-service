@@ -10,7 +10,7 @@ from src.products.graphql.schemas.reviews.queries import DeletedReview
 @strawberry.type
 class ReviewMutations:
     @strawberry.mutation
-    async def add_review(self, input: ReviewInput) -> IReview:
+    async def create_review(self, input: ReviewInput) -> IReview:
         new_review = await StrawberryReviewResolver.create(input=input)
         return new_review
 

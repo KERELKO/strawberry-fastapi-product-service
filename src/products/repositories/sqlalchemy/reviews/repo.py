@@ -10,7 +10,7 @@ class SQLAlchemyReviewRepository(BaseSQLAlchemyRepository):
     class Meta:
         model = Review
 
-    async def _construct_query(self, fields: list[str], **queries) -> sql.Select:
+    async def _construct_select_query(self, fields: list[str], **queries) -> sql.Select:
         fields_to_select = [getattr(Review, f) for f in fields]
         review_id = queries.get('id', None)
         product_id = queries.get('product_id', None)
@@ -32,7 +32,7 @@ class SQLAlchemyReviewRepository(BaseSQLAlchemyRepository):
         return stmt
 
     async def get(self, id: int, fields: list[str]) -> ReviewDTO:
-        values = await self._execute_query(fields=fields, id=id)
+        values = await self._execute_query(fields=fields, id=id, first=True)
         if not values:
             raise ObjectDoesNotExistException('Review', object_id=id)
         data = {}

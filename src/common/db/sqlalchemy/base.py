@@ -99,7 +99,7 @@ class BaseSQLAlchemyRepository(metaclass=MetaSQLAlchemyRepository):
     async def _execute_query(
         self,
         *args,
-        first: bool = True,
+        first: bool = False,
         **kwargs,
     ) -> list[tuple[Any]] | tuple[Any]:
         stmt = await self._construct_select_query(*args, **kwargs)

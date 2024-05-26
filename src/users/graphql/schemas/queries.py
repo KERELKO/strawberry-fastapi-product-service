@@ -13,12 +13,17 @@ class User(IUser):
     username: str
 
     @strawberry.field
-    def reviews(self, info: strawberry.Info, offset: int = 0, limit: int = 20) -> list[Review]:
+    async def reviews(
+        self,
+        info: strawberry.Info,
+        offset: int = 0,
+        limit: int = 20,
+    ) -> list[Review]:
         if not self.id:
             return []
         fields = get_required_fields(info)
-        reviews = StrawberryReviewResolver.get_list(
-            fields=fields, user_id=self.id, offset=offset, limit=limit,
+        reviews = await StrawberryReviewResolver.get_list(
+            fields=fields, user_id=int(self.id), offset=offset, limit=limit,
         )
         return reviews
 

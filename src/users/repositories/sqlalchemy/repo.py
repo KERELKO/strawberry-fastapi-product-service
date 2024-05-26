@@ -53,12 +53,10 @@ class SQLAlchemyUserRepository(BaseSQLAlchemyRepository):
         id: int,
         fields: list[str],
     ) -> UserDTO:
-        list_values = await self._execute_query(
-            fields=fields, id=id,
+        values = await self._execute_query(
+            fields=fields, id=id, first=True,
         )
-        try:
-            values = list_values[0]
-        except IndexError:
+        if not values:
             raise ObjectDoesNotExistException('User', id)
         data = {}
         for value_index, field in enumerate(fields):

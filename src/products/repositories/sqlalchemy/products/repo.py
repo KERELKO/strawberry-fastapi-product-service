@@ -15,7 +15,7 @@ class SQLAlchemyProductRepository(BaseSQLAlchemyRepository):
         stmt = stmt.join(Review, onclause=Product.id == Review.product_id)
         return stmt
 
-    async def _construct_query(
+    async def _construct_select_query(
         self,
         fields: list[str],
         **queries,

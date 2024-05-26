@@ -13,25 +13,35 @@ class Review(IReview):
     _product_id: strawberry.ID | None = None
 
     @strawberry.field
-    async def product(self, info: strawberry.Info) -> IProduct:
+    async def product(self, info: strawberry.Info) -> IProduct | None:
         from src.products.graphql.resolvers.products import StrawberryProductResolver
         required_fields = get_required_fields(info)
-        if not self.id:
-            raise IDIsNotProvided('Hint: add field \'id\' to the query schema')
-        product = await StrawberryProductResolver.get_by_review_id(
-            review_id=int(self.id), fields=required_fields,
-        )
+        if self._product_id:
+            product = await StrawberryProductResolver.get(
+                id=int(self._product_id), fields=required_fields,
+            )
+        else:
+            if not self.id:
+                raise IDIsNotProvided('Hint: add field \'id\' to the query schema')
+            product = await StrawberryProductResolver.get_by_review_id(
+                review_id=int(self.id), fields=required_fields,
+            )
         return product
 
     @strawberry.field
-    async def user(self, info: strawberry.Info) -> IUser:
+    async def user(self, info: strawberry.Info) -> IUser | None:
         from src.users.graphql.resolver import StrawberryUserResolver
         required_fields = get_required_fields(info)
         if not self.id:
             raise IDIsNotProvided('Hint: add field \'id\' to the query schema')
-        user = await StrawberryUserResolver.get_by_review_id(
-            review_id=int(self.id), fields=required_fields,
-        )
+        if self._user_id:
+            user = await StrawberryUserResolver.get(
+                id=int(self._user_id), fields=required_fields,
+            )
+        else:
+            user = await StrawberryUserResolver.get_by_review_id(
+                review_id=int(self.id), fields=required_fields,
+            )
         return user
 
 

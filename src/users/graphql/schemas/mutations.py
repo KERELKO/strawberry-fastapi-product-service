@@ -10,13 +10,13 @@ from src.users.graphql.resolver import StrawberryUserResolver
 @strawberry.type
 class UserMutations:
     @strawberry.mutation
-    def create_user(self, input: UserInput) -> IUser:
-        new_user = StrawberryUserResolver.create(input=input)
+    async def register_user(self, input: UserInput) -> IUser:
+        new_user = await StrawberryUserResolver.create(input=input)
         return new_user
 
     @strawberry.mutation
-    def update_user(self, id: strawberry.ID, input: UpdateUserInput) -> IUser:
-        updated_user = StrawberryUserResolver.update(input=input, id=int(id))
+    async def update_user(self, id: strawberry.ID, input: UpdateUserInput) -> IUser:
+        updated_user = await StrawberryUserResolver.update(input=input, id=int(id))
         return updated_user
 
     @strawberry.mutation

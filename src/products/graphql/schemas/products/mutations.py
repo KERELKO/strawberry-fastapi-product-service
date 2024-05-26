@@ -10,7 +10,7 @@ from src.products.graphql.schemas.products.queries import DeletedProduct
 @strawberry.type
 class ProductMutations:
     @strawberry.mutation
-    async def add_product(self, input: ProductInput) -> IProduct:
+    async def create_product(self, input: ProductInput) -> IProduct:
         new_product = await StrawberryProductResolver.create(input=input)
         return new_product
 

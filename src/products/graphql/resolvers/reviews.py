@@ -2,6 +2,7 @@ from strawberry.types.nodes import Selection
 
 from src.common.base.graphql.resolvers import BaseStrawberryResolver
 from src.common.di import Container
+from src.common.exceptions import ObjectDoesNotExistException
 from src.products.dto import ReviewDTO
 from src.products.graphql.schemas.reviews.inputs import ReviewInput, UpdateReviewInput
 from src.products.graphql.schemas.reviews.queries import DeletedReview, Review
@@ -36,10 +37,11 @@ class StrawberryReviewResolver(BaseStrawberryResolver):
         required_fields: list[str] = await cls._get_list_fields(fields)
         uow = Container.resolve(AbstractReviewUnitOfWork)
         async with uow:
-            review = await uow.reviews.get(id=id, fields=required_fields)
+            try:
+                review = await uow.reviews.get(id=id, fields=required_fields)
+            except ObjectDoesNotExistException:
+                return None
             await uow.commit()
-        if not review:
-            return None
         return Review(**review.model_dump())
 
     @classmethod

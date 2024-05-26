@@ -2,6 +2,7 @@ from strawberry.types.nodes import Selection
 
 from src.common.base.graphql.resolvers import BaseStrawberryResolver
 from src.common.di import Container
+from src.common.exceptions import ObjectDoesNotExistException
 from src.products.dto import ProductDTO
 from src.products.graphql.schemas.products.inputs import ProductInput, UpdateProductInput
 from src.products.graphql.schemas.products.queries import DeletedProduct, Product
@@ -30,20 +31,24 @@ class StrawberryProductResolver(BaseStrawberryResolver):
         required_fields = await cls._get_list_fields(fields)
         uow = Container.resolve(AbstractProductUnitOfWork)
         async with uow:
-            product = await uow.products.get(fields=required_fields, id=id)
+            try:
+                product = await uow.products.get(fields=required_fields, id=id)
+            except ObjectDoesNotExistException:
+                return None
             await uow.commit()
-        if not product:
-            return None
         return Product(**product.model_dump())
 
     @classmethod
-    async def get_by_review_id(cls, review_id: int, fields: list[Selection]) -> Product:
+    async def get_by_review_id(cls, review_id: int, fields: list[Selection]) -> Product | None:
         required_fields = await cls._get_list_fields(fields)
         uow = Container.resolve(AbstractProductUnitOfWork)
         async with uow:
-            product = await uow.products.get_by_review_id(
-                fields=required_fields, review_id=review_id,
-            )
+            try:
+                product = await uow.products.get_by_review_id(
+                    fields=required_fields, review_id=review_id,
+                )
+            except ObjectDoesNotExistException:
+                return None
             await uow.commit()
         return Product(**product.model_dump())
 
