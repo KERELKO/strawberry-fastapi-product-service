@@ -1,5 +1,3 @@
-from typing import Any
-
 import sqlalchemy as sql
 
 from src.common.db.sqlalchemy.models import Review
@@ -33,16 +31,9 @@ class SQLAlchemyReviewRepository(BaseSQLAlchemyRepository):
             stmt = stmt.limit(limit)
         return stmt
 
-    async def _execute_query(self, *args, **kwargs) -> list[tuple[Any]]:
-        stmt = await self._construct_query(*args, **kwargs)
-        result = await self.session.execute(stmt)
-        return result.all()
-
     async def get(self, id: int, fields: list[str]) -> ReviewDTO:
-        list_values = await self._execute_query(fields=fields, id=id)
-        try:
-            values = list_values[0]
-        except IndexError:
+        values = await self._execute_query(fields=fields, id=id)
+        if not values:
             raise ObjectDoesNotExistException('Review', object_id=id)
         data = {}
         for i, field in enumerate(fields):
@@ -54,15 +45,15 @@ class SQLAlchemyReviewRepository(BaseSQLAlchemyRepository):
         fields: list[str],
         offset: int = 0,
         limit: int = 20,
-        user_id: int = None,
-        product_id: int = None,
+        product_id: int | None = None,
+        user_id: int | None = None,
     ) -> list[ReviewDTO]:
         list_values = await self._execute_query(
             fields=fields,
             offset=offset,
             limit=limit,
-            user_id=user_id,
             product_id=product_id,
+            user_id=user_id,
         )
         dtos = []
         for values in list_values:

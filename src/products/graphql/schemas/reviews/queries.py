@@ -19,7 +19,7 @@ class Review(IReview):
         if not self.id:
             raise IDIsNotProvided('Hint: add field \'id\' to the query schema')
         product = await StrawberryProductResolver.get_by_review_id(
-            review_id=self.id, fields=required_fields,
+            review_id=int(self.id), fields=required_fields,
         )
         return product
 
@@ -30,7 +30,7 @@ class Review(IReview):
         if not self.id:
             raise IDIsNotProvided('Hint: add field \'id\' to the query schema')
         user = await StrawberryUserResolver.get_by_review_id(
-            review_id=self.id, fields=required_fields,
+            review_id=int(self.id), fields=required_fields,
         )
         return user
 

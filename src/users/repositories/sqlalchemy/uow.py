@@ -4,6 +4,8 @@ from src.users.repositories.base import AbstractUserUnitOfWork
 
 
 class SQLAlchemyUserUnitOfWork(BaseSQLAlchemyUnitOfWork, AbstractUserUnitOfWork):
+    users: SQLAlchemyUserRepository
+
     async def __aenter__(self):
         self.session = self.session_factory()
         self.users = SQLAlchemyUserRepository(self.session)

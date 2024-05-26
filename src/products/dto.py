@@ -1,13 +1,13 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import ConfigDict
+
+from src.common.base.dto import BaseDTO
 
 
-class ReviewDTO(BaseModel):
+class ReviewDTO(BaseDTO):
     model_config = ConfigDict(extra='allow')
-    id: int | None = None
     content: str = ''
 
 
-class ProductDTO(BaseModel):
-    id: int | None = None
+class ProductDTO(BaseDTO):
     title: str = ''
     description: str = ''

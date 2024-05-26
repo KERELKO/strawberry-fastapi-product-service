@@ -1,4 +1,5 @@
 from logging import Logger
+
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy import event
 
@@ -14,6 +15,7 @@ if config.LISTEN_SQL_QUERIES:
     @event.listens_for(engine.sync_engine, 'before_execute')
     def sql_statement_listener(conn, clauseelement, multiparams, params):
         from src.common.di import Container
+
         logger = Container.resolve(Logger)
         if config.DEBUG:
             print(f'{'SQL stmt':-^40}\n{clauseelement}\n{'':-^40}')

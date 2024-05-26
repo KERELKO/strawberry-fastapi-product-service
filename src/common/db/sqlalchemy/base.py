@@ -1,8 +1,10 @@
-from typing import Any, Type, TypeVar
+from abc import abstractmethod
+from typing import Any, Callable, Type, TypeVar
 
 import sqlalchemy as sql
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
+from src.common.base.dto import BaseDTO
 from src.common.base.uow import AbstractUnitOfWork
 from src.common.exceptions import ObjectDoesNotExistException
 from src.users.dto import UserDTO
@@ -18,24 +20,23 @@ MODELS_RELATED_TO_DTO = {
     Review: ReviewDTO,
 }
 
-
-SQLAlchemyModelType = TypeVar('SQLAlchemyModelType')
-TypeDTO = TypeVar('TypeDTO')
+SQLAlchemyModel = TypeVar('SQLAlchemyModel', bound=User | Product | Review)
+TypeDTO = TypeVar('TypeDTO', bound=BaseDTO)
 
 
 class MetaSQLAlchemyRepository(type):
     """
     Add create, update and delete methods to subclass repository.
     All async.
-    The subclass must implement Meta class inside with variable that contain SQLAlchemy model type
+    The subclass must implement Meta class inside with variable that contains SQLAlchemy model type
     """
     def __new__(
         cls,
         name: str,
-        bases: tuple[Type[Any]],
+        bases: tuple[Type[Any], ...],
         dct: dict[str, Any]
-    ):
-        def create_method(model: Type[SQLAlchemyModelType]):
+    ) -> 'MetaSQLAlchemyRepository':
+        def create_method(model: Type[SQLAlchemyModel]) -> Callable:
             async def create(self, dto: TypeDTO, commit_after_creation: bool = True) -> TypeDTO:
                 values = dto.model_dump()
                 new_entity = model(**values)
@@ -46,11 +47,10 @@ class MetaSQLAlchemyRepository(type):
                 return dto
             return create
 
-        def update_method(model: Type[SQLAlchemyModelType]):
+        def update_method(model: Type[SQLAlchemyModel]) -> Callable:
             async def update(self, id: int, dto: TypeDTO) -> TypeDTO:
                 values: dict = dto.model_dump()
-                if 'id' in values:
-                    values.pop('id')
+                values.pop('id')
                 stmt = (
                     sql.update(model)
                     .where(model.id == id)
@@ -60,18 +60,18 @@ class MetaSQLAlchemyRepository(type):
                 result = await self.session.execute(stmt)
                 updated_entity = result.scalar_one()
                 if not updated_entity:
-                    raise ObjectDoesNotExistException(model.__class__.__name__, object_id=id)
+                    raise ObjectDoesNotExistException(model.__name__, object_id=id)
                 dto_class = MODELS_RELATED_TO_DTO[model]
                 return dto_class(**updated_entity.as_dict())
             return update
 
-        def delete_method(model: Type[SQLAlchemyModelType]):
-            async def delete(self, id: int) -> None:
+        def delete_method(model: Type[SQLAlchemyModel]) -> Callable:
+            async def delete(self, id: int) -> bool:
                 stmt = sql.select(model).where(model.id == id)
                 result = await self.session.execute(stmt)
                 entity = result.scalar_one()
                 if not entity:
-                    raise ObjectDoesNotExistException(model.__class__.__name__, object_id=id)
+                    raise ObjectDoesNotExistException(model.__name__, object_id=id)
                 await self.session.delete(entity)
                 return True
             return delete
@@ -88,6 +88,25 @@ class MetaSQLAlchemyRepository(type):
 class BaseSQLAlchemyRepository(metaclass=MetaSQLAlchemyRepository):
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
+
+    @abstractmethod
+    async def _construct_select_query(self, *args, **queries) -> sql.Select:
+        """
+        Implement the method to make "_execute_query" work,
+        params can be overriden with specific ones
+        """
+
+    async def _execute_query(
+        self,
+        *args,
+        first: bool = True,
+        **kwargs,
+    ) -> list[tuple[Any]] | tuple[Any]:
+        stmt = await self._construct_select_query(*args, **kwargs)
+        result = await self.session.execute(stmt)
+        if first:
+            return result.first()  # type: ignore
+        return result.all()  # type: ignore
 
 
 class BaseSQLAlchemyUnitOfWork(AbstractUnitOfWork):

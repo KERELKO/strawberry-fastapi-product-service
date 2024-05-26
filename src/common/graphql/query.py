@@ -17,8 +17,8 @@ class Query:
         return user
 
     @strawberry.field
-    def users(self, info: strawberry.Info, offset: int = 0, limit: int = 20) -> list[User]:
-        users: list[User] = StrawberryUserResolver.get_list(
+    async def users(self, info: strawberry.Info, offset: int = 0, limit: int = 20) -> list[User]:
+        users: list[User] = await StrawberryUserResolver.get_list(
             fields=get_required_fields(info),
             offset=offset,
             limit=limit,
@@ -26,7 +26,7 @@ class Query:
         return users
 
     @strawberry.field
-    async def review(self, id: strawberry.ID, info: strawberry.Info) -> Review:
+    async def review(self, id: strawberry.ID, info: strawberry.Info) -> Review | None:
         review = await StrawberryReviewResolver.get(id=int(id), fields=get_required_fields(info))
         return review
 

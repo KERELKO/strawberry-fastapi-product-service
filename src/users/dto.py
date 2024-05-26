@@ -1,6 +1,5 @@
-from pydantic import BaseModel
+from src.common.base.dto import BaseDTO
 
 
-class UserDTO(BaseModel):
-    id: int | None = None
+class UserDTO(BaseDTO):
     username: str = ''

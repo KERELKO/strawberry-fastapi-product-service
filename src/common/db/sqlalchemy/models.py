@@ -17,7 +17,7 @@ class User(Base):
         back_populates='user', cascade='all, delete-orphan',
     )
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         return f'SQLAlchemy:User(id={self.id} username={self.username})'
 
     def as_dict(self) -> dict[str, Any]:
@@ -38,7 +38,7 @@ class Review(Base):
     product_id: Mapped[int] = mapped_column(ForeignKey('products.id'))
     product: Mapped['Product'] = relationship()
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         return (
             f'SQLAlchemy:Review(id={self.id} content={self.content}'
             f'user_id={self.user_id} product_id={self.product_id})'
@@ -62,7 +62,7 @@ class Product(Base):
     description: Mapped[str] = mapped_column()
     reviews: Mapped[list['Review']] = relationship(back_populates='product')
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         return f'SQLAlchemy:Product(id={self.id} title={self.title} description={self.description})'
 
     def as_dict(self) -> dict[str, Any]:

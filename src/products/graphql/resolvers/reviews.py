@@ -15,8 +15,8 @@ class StrawberryReviewResolver(BaseStrawberryResolver):
         fields: list[Selection],
         offset: int = 0,
         limit: int = 20,
-        user_id: int = None,
-        product_id: int = None,
+        user_id: int | None = None,
+        product_id: int | None = None,
     ) -> list[Review]:
         required_fields: list[str] = await cls._get_list_fields(fields)
         uow = Container.resolve(AbstractReviewUnitOfWork)

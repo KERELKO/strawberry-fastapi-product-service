@@ -1,5 +1,3 @@
-from typing import Any
-
 import sqlalchemy as sql
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 
@@ -13,26 +11,19 @@ class SQLAlchemyUserRepository(BaseSQLAlchemyRepository):
     class Meta:
         model = User
 
-    async def _get_model_fields(
-        self,
-        user_fields: list[str],
-    ) -> tuple[list[InstrumentedAttribute]]:
-        user_fields = [getattr(User, f) for f in user_fields]
-        return user_fields
-
     async def _join_reviews(self, stmt: sql.Select) -> sql.Select:
         stmt = stmt.join(Review, onclause=User.id == Review.user_id)
         return stmt
 
     async def _construct_select_query(
         self,
-        user_fields: list[str],
+        fields: list[str],
         **queries,
     ) -> sql.Select:
         user_id = queries.get('id', None)
         offset = queries.get('offset', None)
         limit = queries.get('limit', None)
-        fields_to_select = await self._get_model_fields(user_fields)
+        fields_to_select: list[InstrumentedAttribute] = [getattr(User, f) for f in fields]
         stmt = sql.select(*fields_to_select)
 
         if user_id is not None:
@@ -44,20 +35,13 @@ class SQLAlchemyUserRepository(BaseSQLAlchemyRepository):
 
         return stmt
 
-    async def _execute_query(self, *args, first: bool = False, **kwargs) -> list[tuple[Any]]:
-        stmt = await self._construct_select_query(*args, **kwargs)
-        result = await self.session.execute(stmt)
-        if first:
-            return result.first()
-        return result.all()
-
     async def get_list(
         self,
         fields: list[str],
         offset: int = 0,
         limit: int = 20,
     ) -> list[UserDTO]:
-        list_values = await self._execute_query(user_fields=fields, offset=offset, limit=limit)
+        list_values = await self._execute_query(fields=fields, offset=offset, limit=limit)
         dtos = []
         for values in list_values:
             data = {field: value for field, value in zip(fields, values)}
@@ -67,27 +51,27 @@ class SQLAlchemyUserRepository(BaseSQLAlchemyRepository):
     async def get(
         self,
         id: int,
-        user_fields: list[str],
+        fields: list[str],
     ) -> UserDTO:
         list_values = await self._execute_query(
-            user_fields=user_fields, id=id,
+            fields=fields, id=id,
         )
         try:
             values = list_values[0]
         except IndexError:
             raise ObjectDoesNotExistException('User', id)
         data = {}
-        for value_index, field in enumerate(user_fields):
+        for value_index, field in enumerate(fields):
             data[field] = values[value_index]
         return UserDTO(**data)
 
-    async def get_by_review_id(self, review_id: int, user_fields: list[str]) -> UserDTO:
+    async def get_by_review_id(self, review_id: int, fields: list[str]) -> UserDTO:
         values = await self._execute_query(
-            user_fields=user_fields, review_id=review_id, first=True
+            fields=fields, review_id=review_id, first=True
         )
         if not values:
             raise ObjectDoesNotExistException('User')
         data = {}
-        for value_index, field in enumerate(user_fields):
+        for value_index, field in enumerate(fields):
             data[field] = values[value_index]
         return UserDTO(**data)
