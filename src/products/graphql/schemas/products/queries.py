@@ -11,6 +11,7 @@ class Product(IProduct):
     id: strawberry.ID
     title: str
     description: str
+    _reviews: list[Review] = strawberry.field(default_factory=list, name='_reviews')
 
     @strawberry.field
     async def reviews(
@@ -19,6 +20,8 @@ class Product(IProduct):
         offset: int = 0,
         limit: int = 20,
     ) -> list[Review]:
+        if self._reviews:
+            return self._reviews
         if not self.id:
             return []
         fields = get_required_fields(info)

@@ -11,11 +11,15 @@ class Review(IReview):
     content: str
     _user_id: strawberry.ID | None = None
     _product_id: strawberry.ID | None = None
+    _product: IProduct | None = strawberry.field(default=None, name='_product')
+    _user: IUser | None = strawberry.field(default=None, name='_user')
 
     @strawberry.field
     async def product(self, info: strawberry.Info) -> IProduct | None:
         from src.products.graphql.resolvers.products import StrawberryProductResolver
         required_fields = get_required_fields(info)
+        if self._product is not None:
+            return self._product
         if self._product_id:
             product = await StrawberryProductResolver.get(
                 id=int(self._product_id), fields=required_fields,
@@ -32,6 +36,8 @@ class Review(IReview):
     async def user(self, info: strawberry.Info) -> IUser | None:
         from src.users.graphql.resolver import StrawberryUserResolver
         required_fields = get_required_fields(info)
+        if self._user is not None:
+            return self._user
         if not self.id:
             raise IDIsNotProvided('Hint: add field \'id\' to the query schema')
         if self._user_id:

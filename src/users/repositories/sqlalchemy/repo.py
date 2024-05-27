@@ -1,7 +1,7 @@
 import sqlalchemy as sql
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 
-from src.common.db.sqlalchemy.models import Review, User
+from src.common.db.sqlalchemy.models import User
 from src.common.db.sqlalchemy.base import BaseSQLAlchemyRepository
 from src.common.exceptions import ObjectDoesNotExistException
 from src.users.dto import UserDTO
@@ -10,10 +10,6 @@ from src.users.dto import UserDTO
 class SQLAlchemyUserRepository(BaseSQLAlchemyRepository):
     class Meta:
         model = User
-
-    async def _join_reviews(self, stmt: sql.Select) -> sql.Select:
-        stmt = stmt.join(Review, onclause=User.id == Review.user_id)
-        return stmt
 
     async def _construct_select_query(
         self,

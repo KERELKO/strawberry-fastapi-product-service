@@ -11,14 +11,17 @@ from src.products.graphql.schemas.reviews.queries import Review
 class User(IUser):
     id: strawberry.ID
     username: str
+    _reviews: list[Review] = strawberry.field(default_factory=list, name='_reviews')
 
-    @strawberry.field
+    @strawberry.field(init=True)
     async def reviews(
         self,
         info: strawberry.Info,
         offset: int = 0,
         limit: int = 20,
     ) -> list[Review]:
+        if self._reviews:
+            return self._reviews
         if not self.id:
             return []
         fields = get_required_fields(info)

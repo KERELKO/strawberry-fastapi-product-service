@@ -23,7 +23,7 @@
 - Docker
 - Docker-compose
 - Maketools
-
+### Installation
 1. Install the project with
 ```
 git clone https://github.com/KERELKO/Strawberry-fastapi-product-service
@@ -44,7 +44,7 @@ make python
 >>> import asyncio
 >>> asyncio.run(create_db())
 ```
-5. Go to http://localhost:8000/graphql and make your queries!
+5. Go to http://localhost:8000/graphql in your browser and make your queries!
 
 ![image](https://github.com/KERELKO/Fastapi-Graphql-product-service/assets/89779202/0546bd5c-2e63-4995-a77f-e776faf8ba6f)
 
@@ -71,8 +71,10 @@ If you'd like to contribute to this project, feel free to fork the repository an
 ├── src
 │   ├── common
 │   │   ├── base
+│   │   │   ├── dto.py
 │   │   │   ├── graphql
 │   │   │   │   ├── __init__.py
+│   │   │   │   ├── resolvers.py
 │   │   │   │   └── schemas.py
 │   │   │   ├── __init__.py
 │   │   │   ├── repo.py
@@ -87,7 +89,9 @@ If you'd like to contribute to this project, feel free to fork the repository an
 │   │   │       └── models.py
 │   │   ├── di.py
 │   │   ├── exceptions.py
-│   │   ├── graphql_schema.py
+│   │   ├── graphql
+│   │   │   ├── mutations.py
+│   │   │   └── query.py
 │   │   ├── __init__.py
 │   │   ├── logging
 │   │   │   ├── formatters.py
@@ -111,19 +115,37 @@ If you'd like to contribute to this project, feel free to fork the repository an
 │   │   │   │   └── reviews.py
 │   │   │   └── schemas
 │   │   │       ├── __init__.py
-│   │   │       ├── products.py
-│   │   │       └── reviews.py
+│   │   │       ├── products
+│   │   │       │   ├── __init__.py
+│   │   │       │   ├── inputs.py
+│   │   │       │   ├── mutations.py
+│   │   │       │   └── queries.py
+│   │   │       └── reviews
+│   │   │           ├── __init__.py
+│   │   │           ├── inputs.py
+│   │   │           ├── mutations.py
+│   │   │           └── queries.py
 │   │   └── repositories
 │   │       ├── base.py
 │   │       └── sqlalchemy
 │   │           ├── products
+│   │           │   ├── __init__.py
+│   │           │   ├── repo.py
+│   │           │   └── uow.py
 │   │           └── reviews
+│   │               ├── __init__.py
+│   │               ├── repo.py
+│   │               └── uow.py
 │   └── users
 │       ├── dto.py
 │       ├── graphql
 │       │   ├── __init__.py
 │       │   ├── resolver.py
-│       │   └── schemas.py
+│       │   └── schemas
+│       │       ├── __init__.py
+│       │       ├── inputs.py
+│       │       ├── mutations.py
+│       │       └── queries.py
 │       ├── __init__.py
 │       └── repositories
 │           ├── base.py
@@ -133,10 +155,11 @@ If you'd like to contribute to this project, feel free to fork the repository an
 │               ├── repo.py
 │               └── uow.py
 └── tests
+
 ```
 
 ## TODO
 - [ ] Solve N+1 problem in queries
 - [ ] Tests
-- [ ] Mutations
+- [x] Mutations
 - [ ] Logging
