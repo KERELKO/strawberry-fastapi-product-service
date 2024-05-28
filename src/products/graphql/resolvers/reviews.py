@@ -1,3 +1,4 @@
+import strawberry
 from strawberry.types.nodes import Selection
 
 from src.common.base.graphql.resolvers import BaseStrawberryResolver
@@ -46,7 +47,7 @@ class StrawberryReviewResolver(BaseStrawberryResolver):
 
     @classmethod
     async def create(cls, input: ReviewInput) -> Review:
-        dto = ReviewDTO(**input.to_dict())
+        dto = ReviewDTO(**strawberry.asdict(input))
         uow = Container.resolve(AbstractReviewUnitOfWork)
         async with uow:
             new_review: ReviewDTO = await uow.reviews.create(dto=dto)
@@ -57,7 +58,7 @@ class StrawberryReviewResolver(BaseStrawberryResolver):
 
     @classmethod
     async def update(cls, id: int, input: UpdateReviewInput) -> Review:
-        dto = ReviewDTO(**input.to_dict())
+        dto = ReviewDTO(**strawberry.asdict(input))
         uow = Container.resolve(AbstractReviewUnitOfWork)
         async with uow:
             updated_review: ReviewDTO = await uow.reviews.update(dto=dto, id=id)

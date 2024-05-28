@@ -11,8 +11,16 @@ class Review(IReview):
     content: str
     _user_id: strawberry.ID | None = None
     _product_id: strawberry.ID | None = None
-    _product: IProduct | None = strawberry.field(default=None, name='_product')
-    _user: IUser | None = strawberry.field(default=None, name='_user')
+    _product: IProduct | None = strawberry.field(
+        default=None,
+        name='_product',
+        description='Do not use this field for queries, use "product" instead',
+    )
+    _user: IUser | None = strawberry.field(
+        default=None,
+        name='_user',
+        description='Do not use this field for queries, use "user" instead',
+    )
 
     @strawberry.field
     async def product(self, info: strawberry.Info) -> IProduct | None:

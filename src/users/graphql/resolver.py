@@ -1,7 +1,8 @@
+import strawberry
 from strawberry.types.nodes import Selection
 
-from src.common.base.graphql.resolvers import BaseStrawberryResolver
 from src.common.di import Container
+from src.common.base.graphql.resolvers import BaseStrawberryResolver
 from src.common.exceptions import ObjectDoesNotExistException
 from src.users.graphql.schemas.inputs import UserInput, UpdateUserInput
 from src.users.graphql.schemas.queries import User
@@ -58,7 +59,7 @@ class StrawberryUserResolver(BaseStrawberryResolver):
 
     @classmethod
     async def create(cls, input: UserInput) -> User:
-        dto = UserDTO(**input.to_dict())
+        dto = UserDTO(**strawberry.asdict(input))
         uow = Container.resolve(AbstractUserUnitOfWork)
         async with uow:
             new_user: UserDTO = await uow.users.create(dto=dto)
@@ -66,7 +67,7 @@ class StrawberryUserResolver(BaseStrawberryResolver):
 
     @classmethod
     async def update(cls, id: int, input: UpdateUserInput) -> User:
-        dto = UserDTO(**input.to_dict())
+        dto = UserDTO(**strawberry.asdict(input))
         uow = Container.resolve(AbstractUserUnitOfWork)
         async with uow:
             updated_user: UserDTO = await uow.users.update(dto=dto, id=id)

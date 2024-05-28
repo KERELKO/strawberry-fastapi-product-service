@@ -1,3 +1,4 @@
+import strawberry
 from strawberry.types.nodes import Selection
 
 from src.common.base.graphql.resolvers import BaseStrawberryResolver
@@ -54,7 +55,7 @@ class StrawberryProductResolver(BaseStrawberryResolver):
 
     @classmethod
     async def create(cls, input: ProductInput) -> Product:
-        dto = ProductDTO(**input.to_dict())
+        dto = ProductDTO(**strawberry.asdict(input))
         uow = Container.resolve(AbstractProductUnitOfWork)
         async with uow:
             new_product: ProductDTO = await uow.products.create(dto=dto)
@@ -62,7 +63,7 @@ class StrawberryProductResolver(BaseStrawberryResolver):
 
     @classmethod
     async def update(cls, id: int, input: UpdateProductInput) -> Product:
-        dto = ProductDTO(**input.to_dict())
+        dto = ProductDTO(**strawberry.asdict(input))
         uow = Container.resolve(AbstractProductUnitOfWork)
         async with uow:
             updated_product: ProductDTO = await uow.products.update(dto=dto, id=id)

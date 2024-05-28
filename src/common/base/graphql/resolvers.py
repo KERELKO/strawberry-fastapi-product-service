@@ -11,7 +11,13 @@ class BaseStrawberryResolver:
     ) -> list[str]:
         list_fields: list[str] = []
         for field in fields:
-            if remove_related and field.selections:
-                continue
-            list_fields.append(to_snake_case(field.name))
+            if remove_related:
+                if not field.selections:
+                    list_fields.append(to_snake_case(field.name))
+            else:
+                if not field.selections:
+                    list_fields.append(to_snake_case(field.name))
+                    continue
+                for related_field in field.selections:
+                    list_fields.append(f'{field.name}_{related_field.name}')
         return list_fields

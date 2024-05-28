@@ -11,7 +11,11 @@ class Product(IProduct):
     id: strawberry.ID
     title: str
     description: str
-    _reviews: list[Review] = strawberry.field(default_factory=list, name='_reviews')
+    _reviews: list[Review] = strawberry.field(
+        default_factory=list,
+        name='_reviews',
+        description='Do not use this field for queries, use "reviews" instead',
+    )
 
     @strawberry.field
     async def reviews(

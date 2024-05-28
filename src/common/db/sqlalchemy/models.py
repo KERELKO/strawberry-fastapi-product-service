@@ -60,7 +60,9 @@ class Product(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(50))
     description: Mapped[str] = mapped_column()
-    reviews: Mapped[list['Review']] = relationship(back_populates='product')
+    reviews: Mapped[list['Review']] = relationship(
+        back_populates='product', cascade='all, delete-orphan',
+    )
 
     def __repr__(self) -> str:
         return f'SQLAlchemy:Product(id={self.id} title={self.title} description={self.description})'

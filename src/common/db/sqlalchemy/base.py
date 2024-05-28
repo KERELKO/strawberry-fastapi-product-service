@@ -34,7 +34,7 @@ class MetaSQLAlchemyRepository(type):
         cls,
         name: str,
         bases: tuple[Type[Any], ...],
-        dct: dict[str, Any]
+        cls_attrs: dict[str, Any]
     ) -> 'MetaSQLAlchemyRepository':
         def create_method(model: Type[SQLAlchemyModel]) -> Callable:
             async def create(self, dto: TypeDTO, commit_after_creation: bool = True) -> TypeDTO:
@@ -76,13 +76,13 @@ class MetaSQLAlchemyRepository(type):
                 return True
             return delete
 
-        if 'Meta' in dct:
-            model = dct['Meta'].model
-            dct['create'] = create_method(model)
-            dct['update'] = update_method(model)
-            dct['delete'] = delete_method(model)
+        if 'Meta' in cls_attrs:
+            model = cls_attrs['Meta'].model
+            cls_attrs['create'] = create_method(model)
+            cls_attrs['update'] = update_method(model)
+            cls_attrs['delete'] = delete_method(model)
 
-        return super().__new__(cls, name, bases, dct)
+        return super().__new__(cls, name, bases, cls_attrs)
 
 
 class BaseSQLAlchemyRepository(metaclass=MetaSQLAlchemyRepository):

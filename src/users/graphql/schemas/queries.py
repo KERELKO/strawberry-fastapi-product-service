@@ -1,5 +1,4 @@
 import strawberry
-import strawberry.mutation
 
 from src.common.base.graphql.schemas import IDeleted, IUser
 from src.common.utils.graphql import get_required_fields
@@ -11,9 +10,13 @@ from src.products.graphql.schemas.reviews.queries import Review
 class User(IUser):
     id: strawberry.ID
     username: str
-    _reviews: list[Review] = strawberry.field(default_factory=list, name='_reviews')
+    _reviews: list[Review] = strawberry.field(
+        default_factory=list,
+        name='_reviews',
+        description='Do not use this field for queries, use "reviews" instead',
+    )
 
-    @strawberry.field(init=True)
+    @strawberry.field
     async def reviews(
         self,
         info: strawberry.Info,
