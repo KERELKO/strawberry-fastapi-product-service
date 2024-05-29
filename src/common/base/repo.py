@@ -1,13 +1,15 @@
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic
 
+from src.common.base.dto import ID
+
 
 T = TypeVar('T')
 
 
 class AbstractRepository(Generic[T], ABC):
     @abstractmethod
-    async def get(self, id: int, fields: list[str]) -> T:
+    async def get(self, id: ID, fields: list[str]) -> T:
         ...
 
     @abstractmethod
@@ -19,9 +21,9 @@ class AbstractRepository(Generic[T], ABC):
         ...
 
     @abstractmethod
-    async def update(self, id: int, dto: T) -> T:
+    async def update(self, id: ID, dto: T) -> T:
         ...
 
     @abstractmethod
-    async def delete(self, id: int) -> bool:
+    async def delete(self, id: ID) -> bool:
         ...

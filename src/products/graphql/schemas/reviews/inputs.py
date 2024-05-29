@@ -4,8 +4,8 @@ import strawberry
 @strawberry.input
 class ReviewInput:
     content: str
-    user_id: int
-    product_id: int
+    user_id: strawberry.ID
+    product_id: strawberry.ID
 
 
 @strawberry.input

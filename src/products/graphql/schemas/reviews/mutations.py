@@ -2,6 +2,7 @@ import strawberry
 
 from src.common.base.graphql.schemas import IReview
 from src.common.exceptions import ObjectDoesNotExistException
+from src.common.utils.parsers import parse_id
 from src.products.graphql.resolvers.reviews import StrawberryReviewResolver
 from src.products.graphql.schemas.reviews.inputs import ReviewInput, UpdateReviewInput
 from src.products.graphql.schemas.reviews.queries import DeletedReview
@@ -15,14 +16,14 @@ class ReviewMutations:
         return new_review
 
     @strawberry.mutation
-    async def update_review(self, input: UpdateReviewInput, id: int) -> IReview:
+    async def update_review(self, input: UpdateReviewInput, id: strawberry.ID) -> IReview:
         updated_review = await StrawberryReviewResolver.update(input=input, id=id)
         return updated_review
 
     @strawberry.mutation
     async def delete_review(self, id: strawberry.ID) -> DeletedReview:
         try:
-            deleted: DeletedReview = await StrawberryReviewResolver.delete(id=int(id))
+            deleted: DeletedReview = await StrawberryReviewResolver.delete(id=parse_id(id))
         except ObjectDoesNotExistException:
             deleted.message = 'Review was not deleted'
             return deleted

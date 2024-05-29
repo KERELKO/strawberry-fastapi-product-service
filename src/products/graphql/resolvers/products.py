@@ -1,6 +1,7 @@
 import strawberry
 from strawberry.types.nodes import Selection
 
+from src.common.base.dto import ID
 from src.common.base.graphql.resolvers import BaseStrawberryResolver
 from src.common.di import Container
 from src.common.exceptions import ObjectDoesNotExistException
@@ -28,7 +29,7 @@ class StrawberryProductResolver(BaseStrawberryResolver):
         return [Product(**p.model_dump()) for p in products]
 
     @classmethod
-    async def get(cls, id: int, fields: list[Selection]) -> Product | None:
+    async def get(cls, id: ID, fields: list[Selection]) -> Product | None:
         required_fields = await cls._get_list_fields(fields)
         uow = Container.resolve(AbstractProductUnitOfWork)
         async with uow:
@@ -40,7 +41,7 @@ class StrawberryProductResolver(BaseStrawberryResolver):
         return Product(**product.model_dump())
 
     @classmethod
-    async def get_by_review_id(cls, review_id: int, fields: list[Selection]) -> Product | None:
+    async def get_by_review_id(cls, review_id: ID, fields: list[Selection]) -> Product | None:
         required_fields = await cls._get_list_fields(fields)
         uow = Container.resolve(AbstractProductUnitOfWork)
         async with uow:
@@ -62,7 +63,7 @@ class StrawberryProductResolver(BaseStrawberryResolver):
         return Product(**new_product.model_dump())
 
     @classmethod
-    async def update(cls, id: int, input: UpdateProductInput) -> Product:
+    async def update(cls, id: ID, input: UpdateProductInput) -> Product:
         dto = ProductDTO(**strawberry.asdict(input))
         uow = Container.resolve(AbstractProductUnitOfWork)
         async with uow:
@@ -71,7 +72,7 @@ class StrawberryProductResolver(BaseStrawberryResolver):
         return Product(**updated_product.model_dump())
 
     @classmethod
-    async def delete(cls, id: int) -> DeletedProduct:
+    async def delete(cls, id: ID) -> DeletedProduct:
         uow = Container.resolve(AbstractProductUnitOfWork)
         async with uow:
             is_deleted = await uow.products.delete(id=id)

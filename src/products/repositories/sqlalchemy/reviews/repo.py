@@ -1,5 +1,6 @@
 import sqlalchemy as sql
 
+from src.common.base.dto import ID
 from src.common.db.sqlalchemy.extensions import sqlalchemy_repo_extended
 from src.common.db.sqlalchemy.models import Review
 from src.common.db.sqlalchemy.base import BaseSQLAlchemyRepository
@@ -47,8 +48,8 @@ class SQLAlchemyReviewRepository(BaseSQLAlchemyRepository):
         fields: list[str],
         offset: int = 0,
         limit: int = 20,
-        product_id: int | None = None,
-        user_id: int | None = None,
+        product_id: ID | None = None,
+        user_id: ID | None = None,
     ) -> list[ReviewDTO]:
         list_values = await self._execute_query(
             fields=fields,

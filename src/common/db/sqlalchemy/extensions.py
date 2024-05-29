@@ -22,12 +22,18 @@ TypeDTO = TypeVar('TypeDTO', bound=BaseDTO)
 
 class MetaSQLAlchemyRepository(type):
     """
-    Add create, update and delete methods to subclass repository.
+    Extends subclass repository with the following methods:
+    * create
+    * update
+    * delete
+    * _construct_select_query
+    * _execute_query
+
     All async.
     The subclass must implement Meta class inside with variable that contains SQLAlchemy model type
     """
     def __new__(
-        meta_cls,
+        meta_cls,  # type: ignore
         cls_name: str,
         bases: tuple[Type[Any], ...],
         cls_dict: dict[str, Any]
@@ -49,6 +55,19 @@ def sqlalchemy_repo_extended(
     delete: bool = True,
     query_executor: bool = True,
 ) -> Callable | type:
+    """
+    Can extend repository class with the following methods:
+    * create
+    * update
+    * delete
+
+    if query_executor is True:
+    * _construct_select_query
+    * _execute_query
+
+    All async.
+    The class must implement Meta class inside with variable that contains SQLAlchemy model type
+    """
 
     def wrapper(cls) -> type:
         if 'Meta' not in cls.__dict__:

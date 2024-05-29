@@ -1,6 +1,7 @@
 import strawberry
 
 from src.common.utils.graphql import get_required_fields
+from src.common.utils.parsers import parse_id
 from src.products.graphql.resolvers.reviews import StrawberryReviewResolver
 from src.products.graphql.resolvers.products import StrawberryProductResolver
 from src.products.graphql.schemas.products.queries import Product
@@ -13,7 +14,7 @@ from src.users.graphql.schemas.queries import User
 class Query:
     @strawberry.field
     async def user(self, id: strawberry.ID, info: strawberry.Info) -> User | None:
-        user = await StrawberryUserResolver.get(id=int(id), fields=get_required_fields(info))
+        user = await StrawberryUserResolver.get(id=parse_id(id), fields=get_required_fields(info))
         return user
 
     @strawberry.field
@@ -27,7 +28,9 @@ class Query:
 
     @strawberry.field
     async def review(self, id: strawberry.ID, info: strawberry.Info) -> Review | None:
-        review = await StrawberryReviewResolver.get(id=int(id), fields=get_required_fields(info))
+        review = await StrawberryReviewResolver.get(
+            id=parse_id(id), fields=get_required_fields(info)
+        )
         return review
 
     @strawberry.field
@@ -46,7 +49,9 @@ class Query:
 
     @strawberry.field
     async def product(self, id: strawberry.ID, info: strawberry.Info) -> Product | None:
-        product = await StrawberryProductResolver.get(id=int(id), fields=get_required_fields(info))
+        product = await StrawberryProductResolver.get(
+            id=parse_id(id), fields=get_required_fields(info)
+        )
         return product
 
     @strawberry.field

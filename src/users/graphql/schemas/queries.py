@@ -2,6 +2,7 @@ import strawberry
 
 from src.common.base.graphql.schemas import IDeleted, IUser
 from src.common.utils.graphql import get_required_fields
+from src.common.utils.parsers import parse_id
 from src.products.graphql.resolvers.reviews import StrawberryReviewResolver
 from src.products.graphql.schemas.reviews.queries import Review
 
@@ -29,7 +30,7 @@ class User(IUser):
             return []
         fields = get_required_fields(info)
         reviews = await StrawberryReviewResolver.get_list(
-            fields=fields, user_id=int(self.id), offset=offset, limit=limit,
+            fields=fields, user_id=parse_id(self.id), offset=offset, limit=limit,
         )
         return reviews
 

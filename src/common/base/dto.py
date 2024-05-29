@@ -1,5 +1,10 @@
+from typing import Union
+
 from pydantic import BaseModel
 
 
+ID = Union[str, int]
+
+
 class BaseDTO(BaseModel):
-    id: int | None = None
+    id: ID | None = None

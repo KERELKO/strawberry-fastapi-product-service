@@ -1,6 +1,7 @@
 import strawberry
 from strawberry.types.nodes import Selection
 
+from src.common.base.dto import ID
 from src.common.di import Container
 from src.common.base.graphql.resolvers import BaseStrawberryResolver
 from src.common.exceptions import ObjectDoesNotExistException
@@ -29,7 +30,7 @@ class StrawberryUserResolver(BaseStrawberryResolver):
     @classmethod
     async def get(
         cls,
-        id: int,
+        id: ID,
         fields: list[Selection],
     ) -> User | None:
         uow = Container.resolve(AbstractUserUnitOfWork)
@@ -42,7 +43,7 @@ class StrawberryUserResolver(BaseStrawberryResolver):
         return User(**user.model_dump())
 
     @classmethod
-    async def get_by_review_id(cls, review_id: int, fields: list[Selection]) -> User | None:
+    async def get_by_review_id(cls, review_id: ID, fields: list[Selection]) -> User | None:
         uow = Container.resolve(AbstractUserUnitOfWork)
         user_fields = await cls._get_list_fields(fields=fields)
         async with uow:
@@ -63,7 +64,7 @@ class StrawberryUserResolver(BaseStrawberryResolver):
         return User(**new_user.model_dump())
 
     @classmethod
-    async def update(cls, id: int, input: UpdateUserInput) -> User:
+    async def update(cls, id: ID, input: UpdateUserInput) -> User:
         dto = UserDTO(**strawberry.asdict(input))
         uow = Container.resolve(AbstractUserUnitOfWork)
         async with uow:
@@ -72,7 +73,7 @@ class StrawberryUserResolver(BaseStrawberryResolver):
         return User(**updated_user.model_dump())
 
     @classmethod
-    async def delete(cls, id: int) -> bool:
+    async def delete(cls, id: ID) -> bool:
         uow = Container.resolve(AbstractUserUnitOfWork)
         async with uow:
             is_deleted = await uow.users.delete(id=id)

@@ -1,6 +1,7 @@
 import strawberry
 from strawberry.types.nodes import Selection
 
+from src.common.base.dto import ID
 from src.common.base.graphql.resolvers import BaseStrawberryResolver
 from src.common.di import Container
 from src.common.exceptions import ObjectDoesNotExistException
@@ -34,7 +35,7 @@ class StrawberryReviewResolver(BaseStrawberryResolver):
         return [Review(**r.model_dump()) for r in reviews]
 
     @classmethod
-    async def get(cls, id: int, fields: list[Selection]) -> Review | None:
+    async def get(cls, id: ID, fields: list[Selection]) -> Review | None:
         required_fields: list[str] = await cls._get_list_fields(fields)
         uow = Container.resolve(AbstractReviewUnitOfWork)
         async with uow:
@@ -57,7 +58,7 @@ class StrawberryReviewResolver(BaseStrawberryResolver):
         return Review(**data)
 
     @classmethod
-    async def update(cls, id: int, input: UpdateReviewInput) -> Review:
+    async def update(cls, id: ID, input: UpdateReviewInput) -> Review:
         dto = ReviewDTO(**strawberry.asdict(input))
         uow = Container.resolve(AbstractReviewUnitOfWork)
         async with uow:
@@ -69,7 +70,7 @@ class StrawberryReviewResolver(BaseStrawberryResolver):
         return Review(**data)
 
     @classmethod
-    async def delete(cls, id: int) -> DeletedReview:
+    async def delete(cls, id: ID) -> DeletedReview:
         uow = Container.resolve(AbstractReviewUnitOfWork)
         async with uow:
             is_deleted = await uow.reviews.delete(id=id)
