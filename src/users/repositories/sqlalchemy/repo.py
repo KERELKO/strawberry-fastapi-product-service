@@ -1,12 +1,14 @@
 import sqlalchemy as sql
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 
+from src.common.db.sqlalchemy.extensions import sqlalchemy_repo_extended
 from src.common.db.sqlalchemy.models import User
 from src.common.db.sqlalchemy.base import BaseSQLAlchemyRepository
 from src.common.exceptions import ObjectDoesNotExistException
 from src.users.dto import UserDTO
 
 
+@sqlalchemy_repo_extended(query_executor=False)
 class SQLAlchemyUserRepository(BaseSQLAlchemyRepository):
     class Meta:
         model = User

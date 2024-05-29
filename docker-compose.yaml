@@ -16,8 +16,18 @@ services:
     container_name: postgres
     image: postgres:latest
     volumes:
-      - ./data/:/var/lib/postgres
+      - ./data/postgres/:/var/lib/postgres
     ports:
       - '5432:5432'
+    env_file:
+      .env
+
+  mongodb:
+    container_name: mongodb
+    image: mongo:6-jammy
+    ports:
+      - '27017:27017'
+    volumes:
+      - ./data/dbdata6/:/var/lib/mongodb
     env_file:
       .env

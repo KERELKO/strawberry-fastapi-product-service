@@ -1,11 +1,13 @@
 import sqlalchemy as sql
 
+from src.common.db.sqlalchemy.extensions import sqlalchemy_repo_extended
 from src.common.db.sqlalchemy.models import Review
 from src.common.db.sqlalchemy.base import BaseSQLAlchemyRepository
 from src.common.exceptions import ObjectDoesNotExistException
 from src.products.dto import ReviewDTO
 
 
+@sqlalchemy_repo_extended(query_executor=False)
 class SQLAlchemyReviewRepository(BaseSQLAlchemyRepository):
     class Meta:
         model = Review

@@ -1,12 +1,15 @@
 from typing import Any
+
 import sqlalchemy as sql
 
 from src.common.db.sqlalchemy.base import BaseSQLAlchemyRepository
+from src.common.db.sqlalchemy.extensions import sqlalchemy_repo_extended
 from src.common.db.sqlalchemy.models import Product, Review
 from src.products.dto import ProductDTO
 from src.common.exceptions import ObjectDoesNotExistException
 
 
+@sqlalchemy_repo_extended(query_executor=False)
 class SQLAlchemyProductRepository(BaseSQLAlchemyRepository):
     class Meta:
         model = Product

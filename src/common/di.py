@@ -4,6 +4,7 @@ import logging
 
 import punq
 
+from src.common.db.mongo.base import FakeMongoUnitOfWork
 from src.products.repositories.base import (
     IProductRepository,
     AbstractProductUnitOfWork,
@@ -15,8 +16,9 @@ from src.products.repositories.sqlalchemy.products.uow import SQLAlchemyProductU
 from src.products.repositories.sqlalchemy.reviews.repo import SQLAlchemyReviewRepository
 from src.products.repositories.sqlalchemy.reviews.uow import SQLAlchemyReviewUnitOfWork
 from src.users.repositories.base import IUserRepository, AbstractUserUnitOfWork
-from src.users.repositories.sqlalchemy.repo import SQLAlchemyUserRepository
-from src.users.repositories.sqlalchemy.uow import SQLAlchemyUserUnitOfWork
+from src.users.repositories.mongo.repo import MongoUserRepository
+# from src.users.repositories.sqlalchemy.repo import SQLAlchemyUserRepository
+# from src.users.repositories.sqlalchemy.uow import SQLAlchemyUserUnitOfWork
 
 
 T = TypeVar('T')
@@ -39,8 +41,8 @@ class Container:
         logger = logging.getLogger('Logger')
         container.register(logging.Logger, instance=logger)
 
-        container.register(IUserRepository, SQLAlchemyUserRepository)
-        container.register(AbstractUserUnitOfWork, SQLAlchemyUserUnitOfWork)
+        container.register(IUserRepository, MongoUserRepository)
+        container.register(AbstractUserUnitOfWork, FakeMongoUnitOfWork)
 
         container.register(IReviewRepository, SQLAlchemyReviewRepository)
         container.register(AbstractReviewUnitOfWork, SQLAlchemyReviewUnitOfWork)

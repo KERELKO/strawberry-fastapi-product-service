@@ -24,7 +24,6 @@ class StrawberryUserResolver(BaseStrawberryResolver):
             users: list[UserDTO] = await uow.users.get_list(
                 fields=required_fields, offset=offset, limit=limit,
             )
-            await uow.commit()
         return [User(**user.model_dump()) for user in users]
 
     @classmethod
@@ -40,7 +39,6 @@ class StrawberryUserResolver(BaseStrawberryResolver):
                 user: UserDTO = await uow.users.get(id=id, fields=user_fields)
             except ObjectDoesNotExistException:
                 return None
-            await uow.commit()
         return User(**user.model_dump())
 
     @classmethod
@@ -54,7 +52,6 @@ class StrawberryUserResolver(BaseStrawberryResolver):
                 )
             except ObjectDoesNotExistException:
                 return None
-            await uow.commit()
         return User(**user.model_dump())
 
     @classmethod
