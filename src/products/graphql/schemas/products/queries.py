@@ -30,7 +30,7 @@ class Product(IProduct):
             return []
         fields = get_required_fields(info)
         reviews = await StrawberryReviewResolver.get_list(
-            fields=fields, product_id=int(self.id), offset=offset, limit=limit,
+            fields=fields, product_id=self.id, offset=offset, limit=limit,
         )
         return reviews
 

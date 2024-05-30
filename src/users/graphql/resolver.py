@@ -1,10 +1,10 @@
 import strawberry
 from strawberry.types.nodes import Selection
 
-from src.common.base.dto import ID
 from src.common.di import Container
 from src.common.base.graphql.resolvers import BaseStrawberryResolver
 from src.common.exceptions import ObjectDoesNotExistException
+from src.common.utils.graphql import parse_id
 from src.users.graphql.schemas.inputs import UserInput, UpdateUserInput
 from src.users.graphql.schemas.queries import User
 from src.users.dto import UserDTO
@@ -30,26 +30,30 @@ class StrawberryUserResolver(BaseStrawberryResolver):
     @classmethod
     async def get(
         cls,
-        id: ID,
+        id: strawberry.ID,
         fields: list[Selection],
     ) -> User | None:
         uow = Container.resolve(AbstractUserUnitOfWork)
         user_fields = await cls._get_list_fields(fields=fields)
         async with uow:
             try:
-                user: UserDTO = await uow.users.get(id=id, fields=user_fields)
+                user: UserDTO = await uow.users.get(id=parse_id(id), fields=user_fields)
             except ObjectDoesNotExistException:
                 return None
         return User(**user.model_dump())
 
     @classmethod
-    async def get_by_review_id(cls, review_id: ID, fields: list[Selection]) -> User | None:
+    async def get_by_review_id(
+        cls,
+        review_id: strawberry.ID,
+        fields: list[Selection],
+    ) -> User | None:
         uow = Container.resolve(AbstractUserUnitOfWork)
         user_fields = await cls._get_list_fields(fields=fields)
         async with uow:
             try:
                 user: UserDTO = await uow.users.get_by_review_id(
-                    review_id=review_id, fields=user_fields,
+                    review_id=parse_id(review_id), fields=user_fields,
                 )
             except ObjectDoesNotExistException:
                 return None
@@ -64,18 +68,18 @@ class StrawberryUserResolver(BaseStrawberryResolver):
         return User(**new_user.model_dump())
 
     @classmethod
-    async def update(cls, id: ID, input: UpdateUserInput) -> User:
+    async def update(cls, id: strawberry.ID, input: UpdateUserInput) -> User:
         dto = UserDTO(**strawberry.asdict(input))
         uow = Container.resolve(AbstractUserUnitOfWork)
         async with uow:
-            updated_user: UserDTO = await uow.users.update(dto=dto, id=id)
+            updated_user: UserDTO = await uow.users.update(dto=dto, id=parse_id(id))
             await uow.commit()
         return User(**updated_user.model_dump())
 
     @classmethod
-    async def delete(cls, id: ID) -> bool:
+    async def delete(cls, id: strawberry.ID) -> bool:
         uow = Container.resolve(AbstractUserUnitOfWork)
         async with uow:
-            is_deleted = await uow.users.delete(id=id)
+            is_deleted = await uow.users.delete(id=parse_id(id))
             await uow.commit()
         return is_deleted

@@ -16,13 +16,13 @@ class ProductMutations:
 
     @strawberry.mutation
     async def update_product(self, id: strawberry.ID, input: UpdateProductInput) -> IProduct:
-        updated_product = await StrawberryProductResolver.update(input=input, id=int(id))
+        updated_product = await StrawberryProductResolver.update(input=input, id=id)
         return updated_product
 
     @strawberry.mutation
     async def delete_product(self, id: strawberry.ID) -> DeletedProduct:
         try:
-            deleted = await StrawberryProductResolver.delete(id=int(id))
+            deleted = await StrawberryProductResolver.delete(id=id)
         except ObjectDoesNotExistException:
             deleted.message = 'Product with given ID is not found'
             return deleted

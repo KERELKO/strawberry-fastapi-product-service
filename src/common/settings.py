@@ -19,22 +19,11 @@ class Config(BaseSettings):
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
 
-    # Mongo
-    MONGO_HOST: str
-    MONGO_PORT: int
-    MONGO_DB: str
-
     @property
     def postgres_connection_string(self) -> str:
         user_pwd = f'{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}'
         host_port = f'{self.POSTGRES_HOST}:{self.POSTGRES_PORT}'
         connection_string = f'{self.POSTGRES_DIALECT}://{user_pwd}@{host_port}/{self.POSTGRES_DB}'
-        return connection_string
-
-    @property
-    def mongo_connection_string(self) -> str:
-        host_port = f'{self.MONGO_HOST}:{self.MONGO_PORT}'
-        connection_string = f'mongodb://{host_port}/{self.MONGO_DB}'
         return connection_string
 
     @property

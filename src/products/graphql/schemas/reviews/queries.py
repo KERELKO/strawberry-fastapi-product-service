@@ -3,7 +3,6 @@ import strawberry
 from src.common.base.graphql.schemas import IDeleted, IProduct, IReview, IUser
 from src.common.exceptions import IDIsNotProvided
 from src.common.utils.graphql import get_required_fields
-from src.common.utils.parsers import parse_id
 
 
 @strawberry.type
@@ -31,13 +30,13 @@ class Review(IReview):
             return self._product
         if self._product_id:
             product = await StrawberryProductResolver.get(
-                id=parse_id(self._product_id), fields=required_fields,
+                id=self._product_id, fields=required_fields,
             )
         else:
             if not self.id:
                 raise IDIsNotProvided('Hint: add field \'id\' to the query schema')
             product = await StrawberryProductResolver.get_by_review_id(
-                review_id=parse_id(self.id), fields=required_fields,
+                review_id=self.id, fields=required_fields,
             )
         return product
 
@@ -51,11 +50,11 @@ class Review(IReview):
             raise IDIsNotProvided('Hint: add field \'id\' to the query schema')
         if self._user_id:
             user = await StrawberryUserResolver.get(
-                id=parse_id(self._user_id), fields=required_fields,
+                id=self._user_id, fields=required_fields,
             )
         else:
             user = await StrawberryUserResolver.get_by_review_id(
-                review_id=parse_id(self.id), fields=required_fields,
+                review_id=self.id, fields=required_fields,
             )
         return user
 

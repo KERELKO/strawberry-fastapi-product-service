@@ -2,7 +2,6 @@ import strawberry
 
 from src.common.base.graphql.schemas import IUser
 from src.common.exceptions import ObjectDoesNotExistException
-from src.common.utils.parsers import parse_id
 from src.users.graphql.schemas.inputs import UpdateUserInput, UserInput
 from src.users.graphql.schemas.queries import DeletedUser
 from src.users.graphql.resolver import StrawberryUserResolver
@@ -17,14 +16,14 @@ class UserMutations:
 
     @strawberry.mutation
     async def update_user(self, id: strawberry.ID, input: UpdateUserInput) -> IUser:
-        updated_user = await StrawberryUserResolver.update(input=input, id=parse_id(id))
+        updated_user = await StrawberryUserResolver.update(input=input, id=id)
         return updated_user
 
     @strawberry.mutation
     async def delete_user(self, id: strawberry.ID) -> DeletedUser:
         not_deleted = DeletedUser(id=id, success=False, message='User was not deleted')
         try:
-            is_deleted = await StrawberryUserResolver.delete(id=parse_id(id))
+            is_deleted = await StrawberryUserResolver.delete(id=id)
         except ObjectDoesNotExistException:
             return not_deleted
         if is_deleted:

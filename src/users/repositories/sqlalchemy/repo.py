@@ -1,7 +1,6 @@
 import sqlalchemy as sql
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 
-from src.common.base.dto import ID
 from src.common.db.sqlalchemy.extensions import sqlalchemy_repo_extended
 from src.common.db.sqlalchemy.models import User
 from src.common.db.sqlalchemy.base import BaseSQLAlchemyRepository
@@ -50,7 +49,7 @@ class SQLAlchemyUserRepository(AbstractUserRepository, BaseSQLAlchemyRepository)
 
     async def get(
         self,
-        id: ID,
+        id: int,
         fields: list[str],
     ) -> UserDTO:
         values = await self._execute_query(
@@ -63,7 +62,7 @@ class SQLAlchemyUserRepository(AbstractUserRepository, BaseSQLAlchemyRepository)
             data[field] = values[value_index]
         return UserDTO(**data)
 
-    async def get_by_review_id(self, review_id: ID, fields: list[str]) -> UserDTO:
+    async def get_by_review_id(self, review_id: int, fields: list[str]) -> UserDTO:
         values = await self._execute_query(
             fields=fields, review_id=review_id, first=True
         )

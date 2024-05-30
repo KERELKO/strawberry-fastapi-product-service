@@ -1,10 +1,10 @@
 import strawberry
 from strawberry.types.nodes import Selection
 
-from src.common.base.dto import ID
 from src.common.base.graphql.resolvers import BaseStrawberryResolver
 from src.common.di import Container
 from src.common.exceptions import ObjectDoesNotExistException
+from src.common.utils.graphql import parse_id
 from src.products.dto import ReviewDTO
 from src.products.graphql.schemas.reviews.inputs import ReviewInput, UpdateReviewInput
 from src.products.graphql.schemas.reviews.queries import DeletedReview, Review
@@ -18,8 +18,8 @@ class StrawberryReviewResolver(BaseStrawberryResolver):
         fields: list[Selection],
         offset: int = 0,
         limit: int = 20,
-        user_id: int | None = None,
-        product_id: int | None = None,
+        user_id: strawberry.ID | None = None,
+        product_id: strawberry.ID | None = None,
     ) -> list[Review]:
         required_fields: list[str] = await cls._get_list_fields(fields)
         uow = Container.resolve(AbstractReviewUnitOfWork)
@@ -28,19 +28,19 @@ class StrawberryReviewResolver(BaseStrawberryResolver):
                 fields=required_fields,
                 offset=offset,
                 limit=limit,
-                user_id=user_id,
-                product_id=product_id,
+                user_id=parse_id(user_id) if user_id is not None else user_id,
+                product_id=parse_id(product_id) if product_id is not None else product_id,
             )
             await uow.commit()
         return [Review(**r.model_dump()) for r in reviews]
 
     @classmethod
-    async def get(cls, id: ID, fields: list[Selection]) -> Review | None:
+    async def get(cls, id: strawberry.ID, fields: list[Selection]) -> Review | None:
         required_fields: list[str] = await cls._get_list_fields(fields)
         uow = Container.resolve(AbstractReviewUnitOfWork)
         async with uow:
             try:
-                review = await uow.reviews.get(id=id, fields=required_fields)
+                review = await uow.reviews.get(id=parse_id(id), fields=required_fields)
             except ObjectDoesNotExistException:
                 return None
             await uow.commit()
@@ -58,11 +58,11 @@ class StrawberryReviewResolver(BaseStrawberryResolver):
         return Review(**data)
 
     @classmethod
-    async def update(cls, id: ID, input: UpdateReviewInput) -> Review:
+    async def update(cls, id: strawberry.ID, input: UpdateReviewInput) -> Review:
         dto = ReviewDTO(**strawberry.asdict(input))
         uow = Container.resolve(AbstractReviewUnitOfWork)
         async with uow:
-            updated_review: ReviewDTO = await uow.reviews.update(dto=dto, id=id)
+            updated_review: ReviewDTO = await uow.reviews.update(dto=dto, id=parse_id(id))
             await uow.commit()
         data = updated_review.model_dump()
         data['_product_id'] = data.pop('product_id')
@@ -70,9 +70,9 @@ class StrawberryReviewResolver(BaseStrawberryResolver):
         return Review(**data)
 
     @classmethod
-    async def delete(cls, id: ID) -> DeletedReview:
+    async def delete(cls, id: strawberry.ID) -> DeletedReview:
         uow = Container.resolve(AbstractReviewUnitOfWork)
         async with uow:
-            is_deleted = await uow.reviews.delete(id=id)
+            is_deleted = await uow.reviews.delete(id=parse_id(id))
             await uow.commit()
-        return DeletedReview(success=is_deleted, id=id)
+        return DeletedReview(success=is_deleted, id=parse_id(id))

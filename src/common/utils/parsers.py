@@ -1,10 +1,5 @@
-from src.common.base.dto import ID
+from typing import Any
 
 
-# TODO: catch specific exception
-def parse_id(id: ID) -> str | int:
-    try:
-        parsed_id = int(id)
-    except Exception:
-        parsed_id = str(id)
-    return parsed_id
+def parse_id(id: Any) -> int:
+    return int(id)
