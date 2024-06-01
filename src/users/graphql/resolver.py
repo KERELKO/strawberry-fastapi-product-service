@@ -19,7 +19,7 @@ class StrawberryUserResolver(BaseStrawberryResolver):
         offset: int = 0,
         limit: int = 20,
     ) -> list[User]:
-        required_fields: list[str] = await cls._get_list_fields(fields=fields)
+        required_fields: list[str] = await cls._fields_to_string(fields=fields)
         uow = Container.resolve(AbstractUserUnitOfWork)
         async with uow:
             users: list[UserDTO] = await uow.users.get_list(
@@ -34,7 +34,7 @@ class StrawberryUserResolver(BaseStrawberryResolver):
         fields: list[Selection],
     ) -> User | None:
         uow = Container.resolve(AbstractUserUnitOfWork)
-        user_fields = await cls._get_list_fields(fields=fields)
+        user_fields = await cls._fields_to_string(fields=fields)
         async with uow:
             try:
                 user: UserDTO = await uow.users.get(id=parse_id(id), fields=user_fields)
@@ -49,7 +49,7 @@ class StrawberryUserResolver(BaseStrawberryResolver):
         fields: list[Selection],
     ) -> User | None:
         uow = Container.resolve(AbstractUserUnitOfWork)
-        user_fields = await cls._get_list_fields(fields=fields)
+        user_fields = await cls._fields_to_string(fields=fields)
         async with uow:
             try:
                 user: UserDTO = await uow.users.get_by_review_id(

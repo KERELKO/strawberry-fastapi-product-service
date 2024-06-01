@@ -4,7 +4,7 @@ from strawberry.types.nodes import Selection
 
 class BaseStrawberryResolver:
     @classmethod
-    async def _get_list_fields(
+    async def _fields_to_string(
         cls,
         fields: list[Selection],
         remove_related: bool = True,
