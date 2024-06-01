@@ -7,7 +7,7 @@
 
 ## Brief overview
 
-![image](https://github.com/KERELKO/Fastapi-Graphql-product-service/assets/89779202/58726397-3f1a-4a33-8dc8-e065c4e262c9)
+![image](https://github.com/KERELKO/Strawberry-fastapi-product-service/assets/89779202/493f4c2e-25ed-462d-b018-822fd7e03169)
 
 ## Technlogies
 - [FastAPI](https://fastapi.tiangolo.com/)
