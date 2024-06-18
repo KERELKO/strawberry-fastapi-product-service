@@ -158,7 +158,6 @@ If you'd like to contribute to this project, feel free to fork the repository an
 ```
 
 ## TODO
-- [ ] Solve N+1 problem in queries
 - [ ] Tests
 - [x] Mutations
 - [ ] Logging
