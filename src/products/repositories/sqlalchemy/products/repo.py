@@ -41,13 +41,6 @@ class SQLAlchemyProductRepository(BaseSQLAlchemyRepository):
             stmt = stmt.limit(limit)
         return stmt
 
-    async def get(self, id: int, fields: list[str]) -> ProductDTO:
-        values = await self._execute_query(fields=fields, id=id, first=True)
-        if not values:
-            raise ObjectDoesNotExistException('Product', object_id=id)
-        data: dict[str, Any] = {f: v for f, v in zip(fields, values)}
-        return ProductDTO(**data)
-
     async def get_by_review_id(self, review_id: int, fields: list[str]) -> ProductDTO:
         values = await self._execute_query(fields=fields, review_id=review_id, first=True)
         if not values:
@@ -62,8 +55,8 @@ class SQLAlchemyProductRepository(BaseSQLAlchemyRepository):
         limit: int = 20,
     ) -> list[ProductDTO]:
         list_values = await self._execute_query(fields=fields, offset=offset, limit=limit)
-        dtos = []
+        dto_list = []
         for values in list_values:
             data = {f: v for f, v in zip(fields, values)}
-            dtos.append(ProductDTO(**data))
-        return dtos
+            dto_list.append(ProductDTO(**data))
+        return dto_list

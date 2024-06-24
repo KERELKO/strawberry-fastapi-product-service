@@ -3,7 +3,6 @@ import sqlalchemy as sql
 from src.common.db.sqlalchemy.extensions import sqlalchemy_repo_extended
 from src.common.db.sqlalchemy.models import Review
 from src.common.db.sqlalchemy.base import BaseSQLAlchemyRepository
-from src.common.exceptions import ObjectDoesNotExistException
 from src.products.dto import ReviewDTO
 
 
@@ -33,15 +32,6 @@ class SQLAlchemyReviewRepository(BaseSQLAlchemyRepository):
             stmt = stmt.limit(limit)
         return stmt
 
-    async def get(self, id: int, fields: list[str]) -> ReviewDTO:
-        values = await self._execute_query(fields=fields, id=id, first=True)
-        if not values:
-            raise ObjectDoesNotExistException('Review', object_id=id)
-        data = {}
-        for i, field in enumerate(fields):
-            data[field] = values[i]
-        return ReviewDTO(**data)
-
     async def get_list(
         self,
         fields: list[str],
@@ -57,8 +47,8 @@ class SQLAlchemyReviewRepository(BaseSQLAlchemyRepository):
             product_id=product_id,
             user_id=user_id,
         )
-        dtos = []
+        dto_list = []
         for values in list_values:
             data = {f: v for f, v in zip(fields, values)}
-            dtos.append(ReviewDTO(**data))
-        return dtos
+            dto_list.append(ReviewDTO(**data))
+        return dto_list

@@ -50,6 +50,7 @@ class MetaSQLAlchemyRepository(type):
 
 def sqlalchemy_repo_extended(
     cls: type | None = None,
+    get: bool = True,
     create: bool = True,
     update: bool = True,
     delete: bool = True,
@@ -81,6 +82,8 @@ def sqlalchemy_repo_extended(
             setattr(cls, 'delete', _delete_method(model=model))
         if update:
             setattr(cls, 'update', _update_method(model=model))
+        if get:
+            setattr(cls, 'get', _get_method(model=model))
         if query_executor:
             setattr(cls, '_construct_select_query', _select_query_constructor(model=model))
             setattr(cls, '_execute_query', _query_executor())
@@ -104,6 +107,19 @@ def _create_method(model: Type[SQLAlchemyModel]) -> Callable:
             dto.id = new_entity.id
         return dto
     return create
+
+
+def _get_method(model: Type[SQLAlchemyModel]) -> Callable:
+    async def get(self, id: int, fields: list[str]) -> TypeDTO:
+        values = await self._execute_query(fields=fields, id=id, first=True)
+        if not values:
+            raise ObjectDoesNotExistException(model.__name__, object_id=id)
+        data = {}
+        for i, field in enumerate(fields):
+            data[field] = values[i]
+        dto_class = MODELS_RELATED_TO_DTO[model]
+        return dto_class(**data)
+    return get
 
 
 def _update_method(model: Type[SQLAlchemyModel]) -> Callable:

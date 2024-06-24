@@ -41,26 +41,11 @@ class SQLAlchemyUserRepository(AbstractUserRepository, BaseSQLAlchemyRepository)
         limit: int = 20,
     ) -> list[UserDTO]:
         list_values = await self._execute_query(fields=fields, offset=offset, limit=limit)
-        dtos = []
+        dto_list = []
         for values in list_values:
             data = {field: value for field, value in zip(fields, values)}
-            dtos.append(UserDTO(**data))
-        return dtos
-
-    async def get(
-        self,
-        id: int,
-        fields: list[str],
-    ) -> UserDTO:
-        values = await self._execute_query(
-            fields=fields, id=id, first=True,
-        )
-        if not values:
-            raise ObjectDoesNotExistException('User', id)
-        data = {}
-        for value_index, field in enumerate(fields):
-            data[field] = values[value_index]
-        return UserDTO(**data)
+            dto_list.append(UserDTO(**data))
+        return dto_list
 
     async def get_by_review_id(self, review_id: int, fields: list[str]) -> UserDTO:
         values = await self._execute_query(
