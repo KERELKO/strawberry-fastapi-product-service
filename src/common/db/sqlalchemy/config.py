@@ -2,6 +2,7 @@ from logging import Logger
 
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy import event
+from .models import Base
 
 from src.common.settings import config
 
@@ -20,3 +21,13 @@ if config.LISTEN_SQL_QUERIES:
         if config.DEBUG:
             print(f'{'SQL stmt':-^40}\n{clauseelement}\n{'':-^40}')
         logger.info(f'SQL stmt: {clauseelement}')
+
+
+async def create_db():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+
+async def drop_db():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)

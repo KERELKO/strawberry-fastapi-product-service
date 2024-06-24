@@ -3,22 +3,16 @@ from fastapi import FastAPI
 import strawberry
 from strawberry.fastapi import GraphQLRouter
 
-from src.common.db.sqlalchemy.config import engine
-from src.common.db.sqlalchemy.models import Base
+from src.common.db.sqlalchemy.config import create_db
 from src.common.graphql.query import Query
 from src.common.graphql.mutations import Mutation
 from src.common.middlewares import ExecutingTimeMiddleware
 from src.common.settings import config
 
 
-async def create_db():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-
-
-async def drop_db():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
+def init_db_tables():
+    import asyncio
+    asyncio.run(create_db())
 
 
 def graphql_app() -> GraphQLRouter:

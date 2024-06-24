@@ -37,14 +37,7 @@ cat .env.example > .env
 ```
 docker compose up
 ```
-4. When project is running you need to apply migrations
-```
-make python
->>> from src.main import create_db
->>> import asyncio
->>> asyncio.run(create_db())
-```
-5. Go to http://localhost:8000/graphql in your browser and make your queries!
+4. Go to http://localhost:8000/graphql in your browser and make your queries!
 
 ![image](https://github.com/KERELKO/Fastapi-Graphql-product-service/assets/89779202/0546bd5c-2e63-4995-a77f-e776faf8ba6f)
 

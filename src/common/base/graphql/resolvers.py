@@ -20,5 +20,4 @@ class BaseStrawberryResolver:
                     continue
                 for related_field in field.selections:
                     list_fields.append(f'{field.name}.{related_field.name}')
-        print(list_fields)
         return list_fields

@@ -8,10 +8,9 @@ services:
       - .:/app
     ports:
       - '8000:8000'
-    command: 'uvicorn src.main:fastapi_app --reload --host 0.0.0.0 --port 8000 --factory'
+    command: ./entrypoint.sh
     depends_on:
       - db
-
   db:
     container_name: postgres
     image: postgres:latest
