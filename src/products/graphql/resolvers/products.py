@@ -19,7 +19,7 @@ class StrawberryProductResolver(BaseStrawberryResolver):
         offset: int = 0,
         limit: int = 20,
     ) -> list[Product]:
-        required_fields = await cls._fields_to_string(fields)
+        required_fields = await cls._selections_to_strings(fields)
         uow = Container.resolve(AbstractProductUnitOfWork)
         async with uow:
             products = await uow.products.get_list(
@@ -30,7 +30,7 @@ class StrawberryProductResolver(BaseStrawberryResolver):
 
     @classmethod
     async def get(cls, id: strawberry.ID, fields: list[Selection]) -> Product | None:
-        required_fields = await cls._fields_to_string(fields)
+        required_fields = await cls._selections_to_strings(fields)
         uow = Container.resolve(AbstractProductUnitOfWork)
         async with uow:
             try:
@@ -46,7 +46,7 @@ class StrawberryProductResolver(BaseStrawberryResolver):
         review_id: strawberry.ID,
         fields: list[Selection],
     ) -> Product | None:
-        required_fields = await cls._fields_to_string(fields)
+        required_fields = await cls._selections_to_strings(fields)
         uow = Container.resolve(AbstractProductUnitOfWork)
         async with uow:
             try:

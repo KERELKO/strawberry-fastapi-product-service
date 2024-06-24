@@ -19,19 +19,20 @@ from src.users.repositories.sqlalchemy.repo import SQLAlchemyUserRepository
 from src.users.repositories.sqlalchemy.uow import SQLAlchemyUserUnitOfWork
 
 
-T = TypeVar('T')
+ABC = TypeVar('ABC')  # Abstract base class
+Impl = TypeVar('Impl')  # implementation
 
 
 class Container:
-    @cache
     @staticmethod
     def get() -> punq.Container:
         return Container._init()
 
     @staticmethod
-    def resolve(base_cls: Type[T]) -> T:
-        return Container.get().resolve(base_cls)  # type: ignore
+    def resolve(base_cls: Type[ABC]) -> Impl:
+        return Container.get().resolve(base_cls)
 
+    @cache
     @staticmethod
     def _init() -> punq.Container:
         container = punq.Container()

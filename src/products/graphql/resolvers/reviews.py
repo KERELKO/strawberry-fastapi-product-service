@@ -21,7 +21,7 @@ class StrawberryReviewResolver(BaseStrawberryResolver):
         user_id: strawberry.ID | None = None,
         product_id: strawberry.ID | None = None,
     ) -> list[Review]:
-        required_fields: list[str] = await cls._fields_to_string(fields)
+        required_fields: list[str] = await cls._selections_to_strings(fields)
         uow = Container.resolve(AbstractReviewUnitOfWork)
         async with uow:
             reviews = await uow.reviews.get_list(
@@ -36,7 +36,7 @@ class StrawberryReviewResolver(BaseStrawberryResolver):
 
     @classmethod
     async def get(cls, id: strawberry.ID, fields: list[Selection]) -> Review | None:
-        required_fields: list[str] = await cls._fields_to_string(fields)
+        required_fields: list[str] = await cls._selections_to_strings(fields, remove_related=False)
         uow = Container.resolve(AbstractReviewUnitOfWork)
         async with uow:
             try:

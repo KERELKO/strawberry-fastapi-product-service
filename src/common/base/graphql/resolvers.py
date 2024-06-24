@@ -4,7 +4,7 @@ from strawberry.types.nodes import Selection
 
 class BaseStrawberryResolver:
     @classmethod
-    async def _fields_to_string(
+    async def _selections_to_strings(
         cls,
         fields: list[Selection],
         remove_related: bool = True,
@@ -19,5 +19,6 @@ class BaseStrawberryResolver:
                     list_fields.append(to_snake_case(field.name))
                     continue
                 for related_field in field.selections:
-                    list_fields.append(f'{field.name}_{related_field.name}')
+                    list_fields.append(f'{field.name}.{related_field.name}')
+        print(list_fields)
         return list_fields

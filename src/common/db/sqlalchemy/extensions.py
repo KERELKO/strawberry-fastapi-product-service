@@ -58,6 +58,7 @@ def sqlalchemy_repo_extended(
 ) -> Callable | type:
     """
     Can extend repository class with the following methods:
+    * get
     * create
     * update
     * delete
