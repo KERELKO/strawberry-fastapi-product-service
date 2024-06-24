@@ -13,7 +13,7 @@ class BaseSQLAlchemyRepository:
         self.session = session
 
     @abstractmethod
-    async def _construct_select_query(self, *args, **queries) -> sql.Select:
+    def _construct_select_query(self, *args, **queries) -> sql.Select:
         """
         Implement the method to make "_execute_query" work,
         params can be overriden with specific ones
@@ -25,7 +25,7 @@ class BaseSQLAlchemyRepository:
         first: bool = False,
         **kwargs,
     ) -> list[tuple[Any, ...]] | tuple[Any, ...]:
-        stmt = await self._construct_select_query(*args, **kwargs)
+        stmt = self._construct_select_query(*args, **kwargs)
         result = await self.session.execute(stmt)
         if first:
             return result.first()  # type: ignore

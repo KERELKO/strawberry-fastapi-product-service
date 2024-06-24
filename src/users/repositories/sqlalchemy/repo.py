@@ -14,7 +14,7 @@ class SQLAlchemyUserRepository(AbstractUserRepository, BaseSQLAlchemyRepository)
     class Meta:
         model = User
 
-    async def _construct_select_query(
+    def _construct_select_query(
         self,
         fields: list[str],
         **queries,

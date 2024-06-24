@@ -90,7 +90,7 @@ def sqlalchemy_repo_extended(
             setattr(cls, '_execute_query', _query_executor())
         return cls
 
-    # with params: @sqlalchemy_repo_extended()
+    # with params: @sqlalchemy_repo_extended(...)
     if cls is None:
         return wrapper
 
@@ -188,3 +188,27 @@ def _select_query_constructor(model: Type[SQLAlchemyModel]):
             stmt = stmt.limit(limit)
         return stmt
     return construct_select_query
+
+
+def get_model_fields(
+    fields: list[str],
+    model: Type[SQLAlchemyModel],
+) -> tuple[list[Any], list[str]]:
+    model_fields: list[str] = []
+    sql_fields: list[Any] = []
+    for field in fields:
+        splitted = field.split('.')
+        if len(splitted) == 1:
+            sql_fields.append(getattr(model, splitted[0]))
+            continue
+        model_name = splitted[0].capitalize()
+        if model_name == 'User':
+            sql_fields.append(getattr(User, splitted[1]))
+            model_fields.append(User)
+        elif model_name == 'Product':
+            model_fields.append(Product)
+            sql_fields.append(getattr(Product, splitted[1]))
+        elif model_name == 'Review':
+            model_fields.append(Review)
+            sql_fields.append(getattr(Review, splitted[1]))
+    return sql_fields, model_fields

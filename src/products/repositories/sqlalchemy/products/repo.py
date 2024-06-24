@@ -14,11 +14,7 @@ class SQLAlchemyProductRepository(BaseSQLAlchemyRepository):
     class Meta:
         model = Product
 
-    async def _join_reviews(self, stmt: sql.Select) -> sql.Select:
-        stmt = stmt.join(Review, onclause=Product.id == Review.product_id)
-        return stmt
-
-    async def _construct_select_query(
+    def _construct_select_query(
         self,
         fields: list[str],
         **queries,
@@ -33,7 +29,7 @@ class SQLAlchemyProductRepository(BaseSQLAlchemyRepository):
         if product_id is not None:
             stmt = stmt.where(Product.id == product_id)
         elif review_id is not None:
-            stmt = await self._join_reviews(stmt)
+            stmt = self._join_reviews(stmt)
             stmt = stmt.where(Review.id == review_id)
         if offset is not None:
             stmt = stmt.offset(offset)

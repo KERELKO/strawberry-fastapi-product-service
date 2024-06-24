@@ -36,7 +36,7 @@ class StrawberryReviewResolver(BaseStrawberryResolver):
 
     @classmethod
     async def get(cls, id: strawberry.ID, fields: list[Selection]) -> Review | None:
-        required_fields: list[str] = await cls._selections_to_strings(fields, remove_related=False)
+        required_fields: list[str] = await cls._selections_to_strings(fields)
         uow = Container.resolve(AbstractReviewUnitOfWork)
         async with uow:
             try:

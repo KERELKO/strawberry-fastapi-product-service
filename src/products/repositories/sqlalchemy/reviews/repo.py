@@ -11,7 +11,7 @@ class SQLAlchemyReviewRepository(BaseSQLAlchemyRepository):
     class Meta:
         model = Review
 
-    async def _construct_select_query(self, fields: list[str], **queries) -> sql.Select:
+    def _construct_select_query(self, fields: list[str], **queries) -> sql.Select:
         fields_to_select = [getattr(Review, f) for f in fields]
         review_id = queries.get('id', None)
         product_id = queries.get('product_id', None)
