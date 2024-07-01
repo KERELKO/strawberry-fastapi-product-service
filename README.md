@@ -9,7 +9,7 @@
 
 ![image](https://github.com/KERELKO/Strawberry-fastapi-product-service/assets/89779202/493f4c2e-25ed-462d-b018-822fd7e03169)
 
-## Technlogies
+## Technologies
 - [FastAPI](https://fastapi.tiangolo.com/)
 - [Postgresql](https://www.postgresql.org/)
 - [Docker](https://www.docker.com/)
@@ -154,3 +154,5 @@ If you'd like to contribute to this project, feel free to fork the repository an
 - [ ] Tests
 - [x] Mutations
 - [ ] Logging
+- [ ] Pointer-based Pagination
+- [ ] At least partly solve the N+1 problem
