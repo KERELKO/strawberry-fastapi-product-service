@@ -29,7 +29,7 @@ class SQLAlchemyProductRepository(BaseSQLAlchemyRepository):
         if product_id is not None:
             stmt = stmt.where(Product.id == product_id)
         elif review_id is not None:
-            stmt = self._join_reviews(stmt)
+            stmt = stmt.join(Review)
             stmt = stmt.where(Review.id == review_id)
         if offset is not None:
             stmt = stmt.offset(offset)
