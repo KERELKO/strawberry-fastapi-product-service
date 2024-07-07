@@ -9,6 +9,7 @@ from src.products.dto import ReviewDTO
 from src.products.graphql.schemas.reviews.inputs import ReviewInput, UpdateReviewInput
 from src.products.graphql.schemas.reviews.queries import DeletedReview, Review
 from src.products.services.reviews import ReviewService
+from src.products.graphql.converters.reviews import StrawberryReviewConverter
 
 
 @dataclass(eq=False, repr=False)
@@ -34,9 +35,9 @@ class StrawberryReviewResolver(BaseStrawberryResolver):
         return [Review(**r.model_dump()) for r in reviews]
 
     async def get(self, id: strawberry.ID, fields: list[Selection]) -> Review | None:
-        required_fields: list[str] = self._selections_to_strings(fields)
+        required_fields: list[str] = self._selections_to_strings(fields, remove_related=False)
         review = await self.service.get_review_by_id(fields=required_fields, id=parse_id(id))
-        return Review(**review.model_dump()) if review else None
+        return StrawberryReviewConverter.convert(review) if review else None
 
     async def create(self, input: ReviewInput) -> Review:
         dto = ReviewDTO(**strawberry.asdict(input))
