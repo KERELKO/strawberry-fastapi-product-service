@@ -4,6 +4,7 @@ import logging
 
 import punq
 
+from src.products.graphql.resolvers.reviews import StrawberryReviewResolver
 from src.products.repositories.base import (
     AbstractReviewRepository,
     AbstractProductUnitOfWork,
@@ -14,6 +15,7 @@ from src.products.repositories.sqlalchemy.products.repo import SQLAlchemyProduct
 from src.products.repositories.sqlalchemy.products.uow import SQLAlchemyProductUnitOfWork
 from src.products.repositories.sqlalchemy.reviews.repo import SQLAlchemyReviewRepository
 from src.products.repositories.sqlalchemy.reviews.uow import SQLAlchemyReviewUnitOfWork
+from src.products.services.reviews import ReviewService
 from src.users.repositories.base import AbstractUserRepository, AbstractUserUnitOfWork
 from src.users.repositories.sqlalchemy.repo import SQLAlchemyUserRepository
 from src.users.repositories.sqlalchemy.uow import SQLAlchemyUserUnitOfWork
@@ -48,5 +50,8 @@ class Container:
 
         container.register(AbstractProductRepository, SQLAlchemyProductRepository)
         container.register(AbstractProductUnitOfWork, SQLAlchemyProductUnitOfWork)
+
+        container.register(ReviewService)
+        container.register(StrawberryReviewResolver)
 
         return container

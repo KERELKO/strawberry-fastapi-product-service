@@ -1,10 +1,12 @@
 from strawberry.utils.str_converters import to_snake_case
 from strawberry.types.nodes import Selection
 
+from src.common.utils.fields import ModelFields
+
 
 class BaseStrawberryResolver:
     @classmethod
-    async def _selections_to_strings(
+    def _selections_to_strings(
         cls,
         fields: list[Selection],
         remove_related: bool = True,
@@ -20,4 +22,14 @@ class BaseStrawberryResolver:
                     continue
                 for related_field in field.selections:
                     list_fields.append(f'{field.name}.{related_field.name}')
+
+        # TODO: remove
+        print(list_fields)
         return list_fields
+
+    def _selections_to_model_fields(
+        cls,
+        fields: list[Selection],
+        remove_related: bool = True,
+    ) -> list[ModelFields]:
+        ...

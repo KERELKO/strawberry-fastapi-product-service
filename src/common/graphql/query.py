@@ -1,5 +1,6 @@
 import strawberry
 
+from src.common.di import Container
 from src.common.utils.graphql import get_required_fields
 from src.products.graphql.resolvers.reviews import StrawberryReviewResolver
 from src.products.graphql.resolvers.products import StrawberryProductResolver
@@ -27,7 +28,8 @@ class Query:
 
     @strawberry.field
     async def review(self, id: strawberry.ID, info: strawberry.Info) -> Review | None:
-        review = await StrawberryReviewResolver.get(
+        resolver = Container.resolve(StrawberryReviewResolver)
+        review = await resolver.get(
             id=id, fields=get_required_fields(info)
         )
         return review
@@ -39,7 +41,8 @@ class Query:
         offset: int = 0,
         limit: int = 20,
     ) -> list[Review]:
-        reviews: list[Review] = await StrawberryReviewResolver.get_list(
+        resolver = Container.resolve(StrawberryReviewResolver)
+        reviews: list[Review] = await resolver.get_list(
             fields=get_required_fields(info),
             offset=offset,
             limit=limit,
