@@ -1,9 +1,13 @@
 import sqlalchemy as sql
+from sqlalchemy.orm import joinedload
 
+from src.common.base.dto import Entity
 from src.common.db.sqlalchemy.extensions import sqlalchemy_repo_extended
 from src.common.db.sqlalchemy.models import Review
 from src.common.db.sqlalchemy.base import BaseSQLAlchemyRepository
-from src.products.dto import ReviewDTO
+from src.common.utils.fields import SelectedFields
+from src.products.dto import ReviewDTO, ProductDTO
+from src.users.dto import UserDTO
 
 
 @sqlalchemy_repo_extended(query_executor=False)
@@ -52,3 +56,106 @@ class SQLAlchemyReviewRepository(BaseSQLAlchemyRepository):
             data = {f: v for f, v in zip(fields, values)}
             dto_list.append(ReviewDTO(**data))
         return dto_list
+
+
+class SQLAlchemyAggregatedReviewRepository(SQLAlchemyReviewRepository):
+    """
+    Special repository that allows to `solve N+1 problem`
+    when retrieve single or mutiple models from the database
+    """
+
+    def _models_to_join(self, fields: list[SelectedFields]) -> tuple[bool, bool]:
+        join_user = False
+        join_product = False
+        for field in fields:
+            if field.owner.lower() == Entity.USER:
+                join_user = True
+            if field.owner.lower() == Entity.PRODUCT:
+                join_product = True
+        return join_user, join_product
+
+    async def _fetch_many_with_related(
+        self,
+        join_user: bool = False,
+        join_product: bool = False,
+        **filters,
+    ) -> list[Review]:
+        offset = filters.get('offset', 0)
+        limit = filters.get('limit', 20)
+        user_id = filters.get('user_id', None)
+        product_id = filters.get('product_id', None)
+        stmt = sql.select(Review).offset(offset).limit(limit)
+        if join_user:
+            stmt = stmt.options(joinedload(Review.user))
+        if join_product:
+            stmt = stmt.options(joinedload(Review.product))
+        if user_id is not None:
+            stmt = stmt.where(Review.user.id == user_id)
+        if product_id is not None:
+            stmt = stmt.where(Review.product.id == product_id)
+
+        reviews = await self.session.execute(stmt)
+        return reviews.scalars().all()
+
+    async def _fetch_one_with_related(
+        self,
+        join_user: bool = False,
+        join_product: bool = False,
+        **filters,
+    ) -> Review | None:
+        review_id = filters.get('id', None)
+        stmt = sql.select(Review)
+        if join_user:
+            stmt = stmt.options(joinedload(Review.user))
+        if join_product:
+            stmt = stmt.options(joinedload(Review.product))
+        if review_id is not None:
+            stmt = stmt.where(Review.id == review_id)
+        review = await self.session.execute(stmt)
+        return review.scalar_one_or_none()
+
+    async def get(self, id: int, fields: list[str]) -> ReviewDTO | None:
+        join_user = True if any(['user' in f for f in fields]) else False
+        join_product = True if any(['product' in f for f in fields]) else False
+        _review = await self._fetch_one_with_related(
+            join_product=join_product, join_user=join_user, id=id,
+        )
+        if not _review:
+            return None
+        review = ReviewDTO(**_review.as_dict())
+        if join_product:
+            product = ProductDTO(**_review.product.as_dict())
+            review.product = product
+        if join_user:
+            user = UserDTO(**_review.user.as_dict())
+            review.user = user
+        return review
+
+    async def get_list(
+        self,
+        fields: list[SelectedFields],
+        offset: int = 0,
+        limit: int = 20,
+        product_id: int | None = None,
+        user_id: int | None = None,
+    ) -> list[ReviewDTO]:
+        join_user, join_product = self._models_to_join(fields)
+        _reviews = await self._fetch_many_with_related(
+            join_product=join_product,
+            join_user=join_user,
+            product_id=product_id,
+            user_id=user_id,
+            offset=offset,
+            limit=limit,
+        )
+        reviews: list[ReviewDTO] = []
+        for _review in _reviews:
+            review = ReviewDTO(**_review.as_dict())
+            if join_product:
+                product = ProductDTO(**_review.product.as_dict())
+                review.product = product
+            if join_user:
+                user = UserDTO(**_review.user.as_dict())
+                review.user = user
+            reviews.append(review)
+        return reviews

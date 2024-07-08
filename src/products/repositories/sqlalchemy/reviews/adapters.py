@@ -9,7 +9,10 @@ from .repo import SQLAlchemyReviewRepository
 
 
 class SQLAlchemyAggregatedReviewRepository(SQLAlchemyReviewRepository):
-    """Special repository, that use SQL `JOIN` on the models to solve N+1 problem"""
+    """
+    Special adapter that allows to solve N+1 problem
+    when retrieve single or mutiple models from the database
+    """
 
     async def _fetch_many_with_related(
         self,

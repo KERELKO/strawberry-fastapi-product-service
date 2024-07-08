@@ -30,7 +30,7 @@ class Query:
     async def review(self, id: strawberry.ID, info: strawberry.Info) -> Review | None:
         resolver = Container.resolve(StrawberryReviewResolver)
         review = await resolver.get(
-            id=id, fields=get_required_fields(info)
+            id=id, fields=info.selected_fields,
         )
         return review
 
@@ -43,7 +43,7 @@ class Query:
     ) -> list[Review]:
         resolver = Container.resolve(StrawberryReviewResolver)
         reviews: list[Review] = await resolver.get_list(
-            fields=get_required_fields(info),
+            fields=info.selected_fields,
             offset=offset,
             limit=limit,
         )

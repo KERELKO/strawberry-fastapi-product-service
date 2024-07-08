@@ -1,6 +1,6 @@
 from src.common.db.sqlalchemy.base import BaseSQLAlchemyUnitOfWork
 from src.products.repositories.base import AbstractReviewUnitOfWork
-from src.products.repositories.sqlalchemy.reviews.adapters import (
+from src.products.repositories.sqlalchemy.reviews.repo import (
     SQLAlchemyAggregatedReviewRepository
 )
 

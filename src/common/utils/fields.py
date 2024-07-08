@@ -1,8 +1,9 @@
 from dataclasses import dataclass, field
 
+from src.common.base.dto import Entity
+
 
 @dataclass(eq=False)
-class ModelFields:
-    model: str
-    all: bool = False
+class SelectedFields:
+    owner: Entity | str
     fields: list[str] = field(default_factory=list)

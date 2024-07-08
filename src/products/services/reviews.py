@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from src.common.exceptions import ObjectDoesNotExistException
+from src.common.utils.fields import SelectedFields
 from src.products.dto import ReviewDTO
 from src.products.repositories.base import AbstractReviewUnitOfWork
 
@@ -15,12 +16,11 @@ class ReviewService:
                 review = await self.uow.reviews.get(id=id, fields=fields)
             except ObjectDoesNotExistException:
                 return None
-            await self.uow.commit()
         return review
 
     async def get_review_list(
         self,
-        fields: list[str],
+        fields: list[SelectedFields],
         offset: int,
         limit: int,
         user_id: int | None = None,
@@ -34,7 +34,6 @@ class ReviewService:
                 user_id=user_id,
                 product_id=product_id,
             )
-            await self.uow.commit()
         return reviews
 
     async def create_review(self, dto: ReviewDTO) -> ReviewDTO:
