@@ -5,6 +5,7 @@ import sqlalchemy as sql
 from src.common.db.sqlalchemy.base import BaseSQLAlchemyRepository
 from src.common.db.sqlalchemy.extensions import sqlalchemy_repo_extended
 from src.common.db.sqlalchemy.models import Product, Review
+from src.common.utils.fields import SelectedFields
 from src.products.dto import ProductDTO
 from src.common.exceptions import ObjectDoesNotExistException
 
@@ -16,7 +17,7 @@ class SQLAlchemyProductRepository(BaseSQLAlchemyRepository):
 
     def _construct_select_query(
         self,
-        fields: list[str],
+        fields: list[SelectedFields],
         **queries,
     ) -> sql.Select:
         product_id = queries.get('id', None)
@@ -37,7 +38,7 @@ class SQLAlchemyProductRepository(BaseSQLAlchemyRepository):
             stmt = stmt.limit(limit)
         return stmt
 
-    async def get_by_review_id(self, review_id: int, fields: list[str]) -> ProductDTO:
+    async def get_by_review_id(self, review_id: int, fields: list[SelectedFields]) -> ProductDTO:
         values = await self._execute_query(fields=fields, review_id=review_id, first=True)
         if not values:
             raise ObjectDoesNotExistException('Product')
@@ -46,7 +47,7 @@ class SQLAlchemyProductRepository(BaseSQLAlchemyRepository):
 
     async def get_list(
         self,
-        fields: list[str],
+        fields: list[SelectedFields],
         offset: int = 0,
         limit: int = 20,
     ) -> list[ProductDTO]:

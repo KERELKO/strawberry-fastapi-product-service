@@ -33,14 +33,16 @@ class Review(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     content: Mapped[str]
+
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
     user: Mapped['User'] = relationship()
+
     product_id: Mapped[int] = mapped_column(ForeignKey('products.id'))
     product: Mapped['Product'] = relationship()
 
     def __repr__(self) -> str:
         return (
-            f'SQLAlchemy:Review(id={self.id} content={self.content}'
+            f'SQLAlchemy:Review(id={self.id} content={self.content} '
             f'user_id={self.user_id} product_id={self.product_id})'
         )
 

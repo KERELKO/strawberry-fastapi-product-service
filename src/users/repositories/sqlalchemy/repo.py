@@ -1,10 +1,11 @@
 import sqlalchemy as sql
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 
-from src.common.db.sqlalchemy.extensions import sqlalchemy_repo_extended
+from src.common.db.sqlalchemy.extensions import raise_exc, sqlalchemy_repo_extended
 from src.common.db.sqlalchemy.models import User
 from src.common.db.sqlalchemy.base import BaseSQLAlchemyRepository
 from src.common.exceptions import ObjectDoesNotExistException
+from src.common.utils.fields import SelectedFields
 from src.users.dto import UserDTO
 from src.users.repositories.base import AbstractUserRepository
 
@@ -16,13 +17,14 @@ class SQLAlchemyUserRepository(AbstractUserRepository, BaseSQLAlchemyRepository)
 
     def _construct_select_query(
         self,
-        fields: list[str],
+        fields: list[SelectedFields],
         **queries,
     ) -> sql.Select:
         user_id = queries.get('id', None)
         offset = queries.get('offset', None)
         limit = queries.get('limit', None)
-        fields_to_select: list[InstrumentedAttribute] = [getattr(User, f) for f in fields]
+        _fields = fields[0] if len(fields) > 0 else raise_exc(Exception('No fields'))
+        fields_to_select: list[InstrumentedAttribute] = [getattr(User, f) for f in _fields.fields]
         stmt = sql.select(*fields_to_select)
 
         if user_id is not None:
@@ -36,7 +38,7 @@ class SQLAlchemyUserRepository(AbstractUserRepository, BaseSQLAlchemyRepository)
 
     async def get_list(
         self,
-        fields: list[str],
+        fields: list[SelectedFields],
         offset: int = 0,
         limit: int = 20,
     ) -> list[UserDTO]:
@@ -47,7 +49,7 @@ class SQLAlchemyUserRepository(AbstractUserRepository, BaseSQLAlchemyRepository)
             dto_list.append(UserDTO(**data))
         return dto_list
 
-    async def get_by_review_id(self, review_id: int, fields: list[str]) -> UserDTO:
+    async def get_by_review_id(self, review_id: int, fields: list[SelectedFields]) -> UserDTO:
         values = await self._execute_query(
             fields=fields, review_id=review_id, first=True
         )

@@ -4,8 +4,9 @@ from src.products.repositories.sqlalchemy.products.repo import SQLAlchemyProduct
 
 
 class SQLAlchemyProductUnitOfWork(BaseSQLAlchemyUnitOfWork, AbstractProductUnitOfWork):
-    products: SQLAlchemyProductRepository
+    def __init__(self, repo: SQLAlchemyProductRepository) -> None:
+        self.repo = repo
 
     async def __aenter__(self):
         await super().__aenter__()
-        self.products = SQLAlchemyProductRepository(self.session)
+        self.products = self.repo(self.session)

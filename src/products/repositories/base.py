@@ -1,5 +1,6 @@
 from abc import abstractmethod
 
+from src.common.utils.fields import SelectedFields
 from src.products.dto import ProductDTO, ReviewDTO
 from src.common.base.repo import AbstractRepository
 from src.common.base.uow import AbstractUnitOfWork
@@ -7,7 +8,11 @@ from src.common.base.uow import AbstractUnitOfWork
 
 class AbstractProductRepository(AbstractRepository[ProductDTO]):
     @abstractmethod
-    async def get_by_review_id(self, review_id: int, fields: list[str]) -> ProductDTO:
+    async def get_by_review_id(
+        self,
+        review_id: int,
+        fields: list[SelectedFields],
+    ) -> ProductDTO | None:
         ...
 
 
@@ -15,7 +20,7 @@ class AbstractReviewRepository(AbstractRepository[ReviewDTO]):
     @abstractmethod
     async def get_list(
         self,
-        fields: list[str],
+        fields: list[SelectedFields],
         offset: int = 0,
         limit: int = 20,
         product_id: int | None = None,

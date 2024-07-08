@@ -1,9 +1,10 @@
-from typing import Any, Callable, Type, TypeVar
+from typing import Any, Callable, NoReturn, Type, TypeVar
 
 import sqlalchemy as sql
 
 from src.common.exceptions import ObjectDoesNotExistException
 from src.common.base.dto import BaseDTO
+from src.common.utils.fields import SelectedFields
 from src.users.dto import UserDTO
 from src.products.dto import ReviewDTO, ProductDTO
 
@@ -111,7 +112,7 @@ def _create_method(model: Type[SQLAlchemyModel]) -> Callable:
 
 
 def _get_method(model: Type[SQLAlchemyModel]) -> Callable:
-    async def get(self, id: int, fields: list[str]) -> TypeDTO:
+    async def get(self, id: int, fields: list[SelectedFields]) -> TypeDTO:
         values = await self._execute_query(fields=fields, id=id, first=True)
         if not values:
             raise ObjectDoesNotExistException(model.__name__, object_id=id)
@@ -172,10 +173,13 @@ def _query_executor() -> Callable:
 def _select_query_constructor(model: Type[SQLAlchemyModel]):
     async def construct_select_query(
         self,
-        fields: list[str],
+        fields: list[SelectedFields],
         **queries,
     ) -> sql.Select:
         object_id = queries.get('id', None)
+        fields = fields[0].fields if len(fields) > 0 else raise_exc(
+            Exception('Fields not selected'),
+        )
         fields_to_select = [getattr(model, f) for f in fields]
         offset = queries.get('offset', None)
         limit = queries.get('limit', None)
@@ -190,7 +194,7 @@ def _select_query_constructor(model: Type[SQLAlchemyModel]):
     return construct_select_query
 
 
-def get_model_fields(
+def _get_model_fields_with_strings_repr(
     fields: list[str],
     model: Type[SQLAlchemyModel],
 ) -> tuple[list[Any], list[str]]:
@@ -212,3 +216,7 @@ def get_model_fields(
             model_fields.append(Review)
             sql_fields.append(getattr(Review, splitted[1]))
     return sql_fields, model_fields
+
+
+def raise_exc(exc: Exception) -> NoReturn:
+    raise exc

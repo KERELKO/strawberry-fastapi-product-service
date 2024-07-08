@@ -2,6 +2,7 @@ from logging import Logger
 
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy import event
+
 from .models import Base
 
 from src.common.settings import config

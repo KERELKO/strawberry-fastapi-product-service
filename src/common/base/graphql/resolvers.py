@@ -11,7 +11,7 @@ class BaseStrawberryResolver:
         fields: list[Selection],
         remove_related: bool = True,
     ) -> list[str]:
-        list_fields: list[str] = []
+        list_fields: list[SelectedFields] = []
         for field in fields:
             if remove_related:
                 if not field.selections:
@@ -27,7 +27,7 @@ class BaseStrawberryResolver:
     def _selections_to_selected_fields(
         cls,
         fields: list[Selection],
-        remove_related: bool = True,
+        remove_related: bool = False,
     ) -> list[SelectedFields]:
         result: list[SelectedFields] = []
         for field in fields:

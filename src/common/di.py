@@ -13,11 +13,10 @@ from src.products.repositories.base import (
 )
 from src.products.repositories.sqlalchemy.products.repo import SQLAlchemyProductRepository
 from src.products.repositories.sqlalchemy.products.uow import SQLAlchemyProductUnitOfWork
-from src.products.repositories.sqlalchemy.reviews.repo import SQLAlchemyReviewRepository  # noqa
-from src.products.repositories.sqlalchemy.reviews.uow import SQLAlchemyReviewUnitOfWork
-from src.products.repositories.sqlalchemy.reviews.adapters import (
-    SQLAlchemyAggregatedReviewRepository
+from src.products.repositories.sqlalchemy.reviews.repo import (
+    SQLAlchemyAggregatedReviewRepository,
 )
+from src.products.repositories.sqlalchemy.reviews.uow import SQLAlchemyReviewUnitOfWork
 from src.products.services.reviews import ReviewService
 from src.users.repositories.base import AbstractUserRepository, AbstractUserUnitOfWork
 from src.users.repositories.sqlalchemy.repo import SQLAlchemyUserRepository

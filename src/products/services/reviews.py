@@ -10,7 +10,7 @@ from src.products.repositories.base import AbstractReviewUnitOfWork
 class ReviewService:
     uow: AbstractReviewUnitOfWork
 
-    async def get_review_by_id(self, id: int, fields: list[str]) -> ReviewDTO | None:
+    async def get_review_by_id(self, id: int, fields: list[SelectedFields]) -> ReviewDTO | None:
         async with self.uow:
             try:
                 review = await self.uow.reviews.get(id=id, fields=fields)
