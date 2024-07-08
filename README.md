@@ -48,14 +48,10 @@ If you'd like to contribute to this project, feel free to fork the repository an
 ## Project structure
 ```
 .
-├── alembic
-│   ├── env.py
-│   ├── README
-│   ├── script.py.mako
-│   └── versions/
 ├── alembic.ini
 ├── docker-compose.yaml
 ├── Dockerfile
+├── entrypoint.sh
 ├── LICENSE
 ├── Makefile
 ├── poetry.lock
@@ -78,12 +74,14 @@ If you'd like to contribute to this project, feel free to fork the repository an
 │   │   │   └── sqlalchemy
 │   │   │       ├── base.py
 │   │   │       ├── config.py
+│   │   │       ├── extensions.py
 │   │   │       ├── __init__.py
 │   │   │       └── models.py
 │   │   ├── di.py
 │   │   ├── exceptions.py
 │   │   ├── graphql
 │   │   │   ├── mutations.py
+│   │   │   ├── pagination.py
 │   │   │   └── query.py
 │   │   ├── __init__.py
 │   │   ├── logging
@@ -94,13 +92,18 @@ If you'd like to contribute to this project, feel free to fork the repository an
 │   │   ├── middlewares.py
 │   │   ├── settings.py
 │   │   └── utils
+│   │       ├── fields.py
 │   │       ├── graphql.py
-│   │       └── __init__.py
+│   │       ├── __init__.py
+│   │       └── parsers.py
 │   ├── __init__.py
 │   ├── main.py
 │   ├── products
 │   │   ├── dto.py
 │   │   ├── graphql
+│   │   │   ├── converters
+│   │   │   │   ├── products.py
+│   │   │   │   └── reviews.py
 │   │   │   ├── __init__.py
 │   │   │   ├── resolvers
 │   │   │   │   ├── __init__.py
@@ -118,20 +121,24 @@ If you'd like to contribute to this project, feel free to fork the repository an
 │   │   │           ├── inputs.py
 │   │   │           ├── mutations.py
 │   │   │           └── queries.py
-│   │   └── repositories
-│   │       ├── base.py
-│   │       └── sqlalchemy
-│   │           ├── products
-│   │           │   ├── __init__.py
-│   │           │   ├── repo.py
-│   │           │   └── uow.py
-│   │           └── reviews
-│   │               ├── __init__.py
-│   │               ├── repo.py
-│   │               └── uow.py
+│   │   ├── repositories
+│   │   │   ├── base.py
+│   │   │   └── sqlalchemy
+│   │   │       ├── products
+│   │   │       │   ├── __init__.py
+│   │   │       │   ├── repo.py
+│   │   │       │   └── uow.py
+│   │   │       └── reviews
+│   │   │           ├── __init__.py
+│   │   │           ├── repo.py
+│   │   │           └── uow.py
+│   │   └── services
+│   │       ├── products.py
+│   │       └── reviews.py
 │   └── users
 │       ├── dto.py
 │       ├── graphql
+│       │   ├── converter.py
 │       │   ├── __init__.py
 │       │   ├── resolver.py
 │       │   └── schemas
@@ -140,13 +147,14 @@ If you'd like to contribute to this project, feel free to fork the repository an
 │       │       ├── mutations.py
 │       │       └── queries.py
 │       ├── __init__.py
-│       └── repositories
-│           ├── base.py
-│           ├── __init__.py
-│           └── sqlalchemy
-│               ├── __init__.py
-│               ├── repo.py
-│               └── uow.py
+│       ├── repositories
+│       │   ├── base.py
+│       │   ├── __init__.py
+│       │   └── sqlalchemy
+│       │       ├── __init__.py
+│       │       ├── repo.py
+│       │       └── uow.py
+│       └── service.py
 └── tests
 ```
 
@@ -155,4 +163,4 @@ If you'd like to contribute to this project, feel free to fork the repository an
 - [x] Mutations
 - [ ] Logging
 - [ ] Pointer-based Pagination
-- [ ] At least partly solve the N+1 problem
+- [x] At least partly solve the N+1 problem
