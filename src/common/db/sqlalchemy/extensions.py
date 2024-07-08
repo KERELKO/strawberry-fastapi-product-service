@@ -127,8 +127,8 @@ def _get_method(model: Type[SQLAlchemyModel]) -> Callable:
 
 def _update_method(model: Type[SQLAlchemyModel]) -> Callable:
     async def update(self, id: int, dto: TypeDTO) -> TypeDTO:
-        values: dict = dto.model_dump()
-        values.pop('id')
+        _values: dict = dto.model_dump()
+        values = {k: v for k, v in _values.items() if v or k != 'id'}
         stmt = (
             sql.update(model)
             .where(model.id == id)

@@ -9,7 +9,7 @@ from src.products.repositories.sqlalchemy.products.repo import (
 class SQLAlchemyProductUnitOfWork(BaseSQLAlchemyUnitOfWork, AbstractProductUnitOfWork):
     def __init__(
         self,
-        repo: SQLAlchemyProductRepository | SQLAlchemyAggregatedProductRepository,
+        repo: type[SQLAlchemyProductRepository] = SQLAlchemyAggregatedProductRepository,
     ) -> None:
         super().__init__()
         self.repo = repo

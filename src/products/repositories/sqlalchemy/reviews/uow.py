@@ -8,7 +8,7 @@ from src.products.repositories.sqlalchemy.reviews.repo import (
 class SQLAlchemyReviewUnitOfWork(BaseSQLAlchemyUnitOfWork, AbstractReviewUnitOfWork):
     def __init__(
         self,
-        repo: SQLAlchemyReviewRepository | SQLAlchemyAggregatedReviewRepository,
+        repo: type[SQLAlchemyReviewRepository] = SQLAlchemyAggregatedReviewRepository,
     ) -> None:
         super().__init__()
         self.repo = repo

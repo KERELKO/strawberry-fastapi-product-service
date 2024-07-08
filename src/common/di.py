@@ -55,22 +55,13 @@ class Container:
         container.register(logging.Logger, instance=logger)
 
         container.register(AbstractUserRepository, SQLAlchemyAggregatedUserRepository)
-        container.register(
-            AbstractUserUnitOfWork,
-            instance=SQLAlchemyUserUnitOfWork(repo=SQLAlchemyAggregatedUserRepository)
-        )
+        container.register(AbstractUserUnitOfWork, SQLAlchemyUserUnitOfWork)
 
         container.register(AbstractReviewRepository, SQLAlchemyAggregatedReviewRepository)
-        container.register(
-            AbstractReviewUnitOfWork,
-            instance=SQLAlchemyReviewUnitOfWork(SQLAlchemyAggregatedReviewRepository)
-        )
+        container.register(AbstractReviewUnitOfWork, SQLAlchemyReviewUnitOfWork)
 
         container.register(AbstractProductRepository, SQLAlchemyAggregatedProductRepository)
-        container.register(
-            AbstractProductUnitOfWork,
-            instance=SQLAlchemyProductUnitOfWork(SQLAlchemyAggregatedProductRepository)
-        )
+        container.register(AbstractProductUnitOfWork, SQLAlchemyProductUnitOfWork)
 
         container.register(ReviewService)
         container.register(ProductService)

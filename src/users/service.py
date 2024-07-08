@@ -1,14 +1,14 @@
-from dataclasses import dataclass
-
 from src.common.exceptions import ObjectDoesNotExistException
 from src.common.utils.fields import SelectedFields
 from src.users.dto import UserDTO
 from src.users.repositories.base import AbstractUserUnitOfWork
 
 
-@dataclass(eq=False, repr=False)
 class UserService:
-    uow: AbstractUserUnitOfWork
+    def _get_uow(self) -> AbstractUserUnitOfWork:
+        from src.common.di import Container
+        uow = Container.resolve(AbstractUserUnitOfWork)
+        return uow
 
     async def get_user_list(
         self,
@@ -16,11 +16,12 @@ class UserService:
         offset: int,
         limit: int,
     ) -> list[UserDTO]:
-        async with self.uow:
-            users: list[UserDTO] = await self.uow.users.get_list(
+        uow = self._get_uow()
+        async with uow:
+            users: list[UserDTO] = await uow.users.get_list(
                 fields=fields, offset=offset, limit=limit,
             )
-            await self.uow.commit()
+            await uow.commit()
         return users
 
     async def get_user_by_id(
@@ -28,12 +29,13 @@ class UserService:
         id: int,
         fields: list[SelectedFields],
     ) -> UserDTO | None:
-        async with self.uow:
+        uow = self._get_uow()
+        async with uow:
             try:
-                user: UserDTO | None = await self.uow.users.get(id=id, fields=fields)
+                user: UserDTO | None = await uow.users.get(id=id, fields=fields)
             except ObjectDoesNotExistException:
                 user = None
-            await self.uow.commit()
+            await uow.commit()
         return user
 
     async def get_user_by_review_id(
@@ -41,30 +43,34 @@ class UserService:
         review_id: int,
         fields: list[SelectedFields],
     ) -> UserDTO | None:
-        async with self.uow:
+        uow = self._get_uow()
+        async with uow:
             try:
-                user: UserDTO | None = await self.uow.users.get_by_review_id(
+                user: UserDTO | None = await uow.users.get_by_review_id(
                     review_id=review_id, fields=fields,
                 )
             except ObjectDoesNotExistException:
                 user = None
-            await self.uow.commit()
+            await uow.commit()
         return user
 
     async def create_user(self, dto: UserDTO) -> UserDTO:
-        async with self.uow:
-            new_user: UserDTO = await self.uow.users.create(dto=dto)
-            await self.uow.commit()
+        uow = self._get_uow()
+        async with uow:
+            new_user: UserDTO = await uow.users.create(dto=dto)
+            await uow.commit()
         return new_user
 
     async def update_user(self, id: int, dto: UserDTO) -> UserDTO | None:
-        async with self.uow:
-            updated_user: UserDTO | None = await self.uow.users.update(dto=dto, id=id)
-            await self.uow.commit()
+        uow = self._get_uow()
+        async with uow:
+            updated_user: UserDTO | None = await uow.users.update(dto=dto, id=id)
+            await uow.commit()
         return updated_user
 
     async def delete_user(self, id: int) -> bool:
-        async with self.uow:
-            is_deleted = await self.uow.users.delete(id=id)
-            await self.uow.commit()
+        uow = self._get_uow()
+        async with uow:
+            is_deleted = await uow.users.delete(id=id)
+            await uow.commit()
         return is_deleted
