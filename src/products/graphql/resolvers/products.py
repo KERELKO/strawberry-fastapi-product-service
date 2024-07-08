@@ -9,10 +9,12 @@ from src.products.dto import ProductDTO
 from src.products.graphql.schemas.products.inputs import ProductInput, UpdateProductInput
 from src.products.graphql.schemas.products.queries import DeletedProduct, Product
 from src.products.services.products import ProductService
+from src.products.graphql.converters.products import StrawberryProductConverter
 
 
 @dataclass(eq=False, repr=False)
 class StrawberryProductResolver(BaseStrawberryResolver):
+    converter = StrawberryProductConverter
     service: ProductService
 
     async def get_list(
@@ -21,16 +23,16 @@ class StrawberryProductResolver(BaseStrawberryResolver):
         offset: int = 0,
         limit: int = 20,
     ) -> list[Product]:
-        required_fields = self._selections_to_strings(fields)
+        required_fields = self._selections_to_selected_fields(fields)
         products = await self.service.get_products_list(
             fields=required_fields, offset=offset, limit=limit,
         )
-        return [Product(**p.model_dump()) for p in products]
+        return [self.converter.convert(p) for p in products]
 
     async def get(self, id: strawberry.ID, fields: list[Selection]) -> Product | None:
         required_fields = self._selections_to_selected_fields(fields)
         product = await self.service.get_product_by_id(id=parse_id(id), fields=required_fields)
-        return Product(**product.model_dump())
+        return self.converter.convert(product) if product else None
 
     async def get_by_review_id(
         self,
@@ -39,17 +41,17 @@ class StrawberryProductResolver(BaseStrawberryResolver):
     ) -> Product | None:
         required_fields = self._selections_to_selected_fields(fields)
         product = await self.service.get_by_review_id(review_id=review_id, fields=required_fields)
-        return Product(**product.model_dump())
+        return self.converter.convert(product)
 
     async def create(self, input: ProductInput) -> Product:
         dto = ProductDTO(**strawberry.asdict(input))
-        new_product = await self.service_create_product(dto=dto)
-        return Product(**new_product.model_dump())
+        new_product = await self.service.create_product(dto=dto)
+        return self.converter.convert(new_product)
 
-    async def update(self, id: strawberry.ID, input: UpdateProductInput) -> Product:
+    async def update(self, id: strawberry.ID, input: UpdateProductInput) -> Product | None:
         dto = ProductDTO(**strawberry.asdict(input))
         updated_product = await self.service.update_product(id=parse_id(id), dto=dto)
-        return Product(**updated_product.model_dump())
+        return self.converter.convert(updated_product) if updated_product else None
 
     async def delete(self, id: strawberry.ID) -> DeletedProduct:
         is_deleted = await self.service.delete_product(id=parse_id(id))

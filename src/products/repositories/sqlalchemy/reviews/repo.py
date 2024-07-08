@@ -1,8 +1,7 @@
 import sqlalchemy as sql
 from sqlalchemy.orm import joinedload
 
-from src.common.base.dto import Entity
-from src.common.db.sqlalchemy.extensions import sqlalchemy_repo_extended
+from src.common.db.sqlalchemy.extensions import raise_exc, sqlalchemy_repo_extended, _models_to_join
 from src.common.db.sqlalchemy.models import Review
 from src.common.db.sqlalchemy.base import BaseSQLAlchemyRepository
 from src.common.utils.fields import SelectedFields
@@ -16,7 +15,8 @@ class SQLAlchemyReviewRepository(BaseSQLAlchemyRepository):
         model = Review
 
     def _construct_select_query(self, fields: list[SelectedFields], **queries) -> sql.Select:
-        fields_to_select = [getattr(Review, f) for f in fields]
+        _fields = fields[0] if len(fields) > 0 else raise_exc(Exception('No fields'))
+        fields_to_select = [getattr(Review, f) for f in _fields.fields]
         review_id = queries.get('id', None)
         product_id = queries.get('product_id', None)
         user_id = queries.get('user_id', None)
@@ -64,7 +64,7 @@ class SQLAlchemyAggregatedReviewRepository(SQLAlchemyReviewRepository):
     when retrieve single or mutiple models from the database
     """
 
-    def _constuct_join_statement(
+    def _construct_join_statement(
         self,
         stmt: sql.Select,
         join_user: bool,
@@ -76,16 +76,6 @@ class SQLAlchemyAggregatedReviewRepository(SQLAlchemyReviewRepository):
             stmt = stmt.options(joinedload(Review.product))
         return stmt
 
-    def _models_to_join(self, fields: list[SelectedFields]) -> tuple[bool, bool]:
-        join_user = False
-        join_product = False
-        for field in fields:
-            if field.owner.lower() == Entity.USER:
-                join_user = True
-            elif field.owner.lower() == Entity.PRODUCT:
-                join_product = True
-        return join_user, join_product
-
     async def _fetch_many_with_related(
         self,
         join_user: bool,
@@ -96,13 +86,13 @@ class SQLAlchemyAggregatedReviewRepository(SQLAlchemyReviewRepository):
         limit = filters.get('limit', 20)
         user_id = filters.get('user_id', None)
         product_id = filters.get('product_id', None)
-        stmt = self._constuct_join(
+        stmt = self._construct_join_statement(
             sql.select(Review).offset(offset).limit(limit), join_user, join_product,
         )
         if user_id is not None:
             stmt = stmt.where(Review.user.id == user_id)
         if product_id is not None:
-            stmt = stmt.where(Review.product.id == product_id)
+            stmt = stmt.where(Review.product_id == product_id)
 
         reviews = await self.session.execute(stmt)
         return reviews.scalars().all()
@@ -114,14 +104,14 @@ class SQLAlchemyAggregatedReviewRepository(SQLAlchemyReviewRepository):
         **filters,
     ) -> Review | None:
         review_id = filters.get('id', None)
-        stmt = self._constuct_join(sql.select(Review), join_user, join_product)
+        stmt = self._construct_join_statement(sql.select(Review), join_user, join_product)
         if review_id is not None:
             stmt = stmt.where(Review.id == review_id)
         review = await self.session.execute(stmt)
         return review.scalar_one_or_none()
 
     async def get(self, id: int, fields: list[SelectedFields]) -> ReviewDTO | None:
-        join_user, join_product = self._models_to_join(fields)
+        join_user, join_product, _ = _models_to_join(fields)
         _review = await self._fetch_one_with_related(
             join_product=join_product, join_user=join_user, id=id,
         )
@@ -144,7 +134,7 @@ class SQLAlchemyAggregatedReviewRepository(SQLAlchemyReviewRepository):
         product_id: int | None = None,
         user_id: int | None = None,
     ) -> list[ReviewDTO]:
-        join_user, join_product = self._models_to_join(fields)
+        join_user, join_product, _ = _models_to_join(fields)
         _reviews = await self._fetch_many_with_related(
             join_product=join_product,
             join_user=join_user,

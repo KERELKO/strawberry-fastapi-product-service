@@ -4,23 +4,32 @@ import logging
 
 import punq
 
+from src.products.graphql.resolvers.products import StrawberryProductResolver
 from src.products.graphql.resolvers.reviews import StrawberryReviewResolver
+from src.users.graphql.resolver import StrawberryUserResolver
+
 from src.products.repositories.base import (
     AbstractReviewRepository,
     AbstractProductUnitOfWork,
     AbstractProductRepository,
     AbstractReviewUnitOfWork,
 )
-from src.products.repositories.sqlalchemy.products.repo import SQLAlchemyProductRepository
+from src.products.repositories.sqlalchemy.products.repo import (
+    SQLAlchemyProductRepository,
+    SQLAlchemyAggregatedProductRepository,
+)
 from src.products.repositories.sqlalchemy.products.uow import SQLAlchemyProductUnitOfWork
 from src.products.repositories.sqlalchemy.reviews.repo import (
     SQLAlchemyAggregatedReviewRepository,
 )
 from src.products.repositories.sqlalchemy.reviews.uow import SQLAlchemyReviewUnitOfWork
+
+from src.products.services.products import ProductService
 from src.products.services.reviews import ReviewService
 from src.users.repositories.base import AbstractUserRepository, AbstractUserUnitOfWork
 from src.users.repositories.sqlalchemy.repo import SQLAlchemyUserRepository
 from src.users.repositories.sqlalchemy.uow import SQLAlchemyUserUnitOfWork
+from src.users.service import UserService
 
 
 ABC = TypeVar('ABC')
@@ -45,15 +54,29 @@ class Container:
         container.register(logging.Logger, instance=logger)
 
         container.register(AbstractUserRepository, SQLAlchemyUserRepository)
-        container.register(AbstractUserUnitOfWork, SQLAlchemyUserUnitOfWork)
+        container.register(
+            AbstractUserUnitOfWork,
+            instance=SQLAlchemyUserUnitOfWork(repo=SQLAlchemyUserRepository)
+        )
 
         container.register(AbstractReviewRepository, SQLAlchemyAggregatedReviewRepository)
-        container.register(AbstractReviewUnitOfWork, SQLAlchemyReviewUnitOfWork)
+        container.register(
+            AbstractReviewUnitOfWork,
+            instance=SQLAlchemyReviewUnitOfWork(SQLAlchemyAggregatedReviewRepository)
+        )
 
         container.register(AbstractProductRepository, SQLAlchemyProductRepository)
-        container.register(AbstractProductUnitOfWork, SQLAlchemyProductUnitOfWork)
+        container.register(
+            AbstractProductUnitOfWork,
+            instance=SQLAlchemyProductUnitOfWork(SQLAlchemyAggregatedProductRepository)
+        )
 
         container.register(ReviewService)
+        container.register(ProductService)
+        container.register(UserService)
+
         container.register(StrawberryReviewResolver)
+        container.register(StrawberryProductResolver)
+        container.register(StrawberryUserResolver)
 
         return container

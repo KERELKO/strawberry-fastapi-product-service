@@ -24,12 +24,15 @@ class Product(IProduct):
         offset: int = 0,
         limit: int = 20,
     ) -> list[Review]:
+        from src.common.di import Container
+        resolver = Container.resolve(StrawberryReviewResolver)
+
         if self._reviews:
             return self._reviews
         if not self.id:
             return []
         fields = get_required_fields(info)
-        reviews = await StrawberryReviewResolver.get_list(
+        reviews = await resolver.get_list(
             fields=fields, product_id=self.id, offset=offset, limit=limit,
         )
         return reviews

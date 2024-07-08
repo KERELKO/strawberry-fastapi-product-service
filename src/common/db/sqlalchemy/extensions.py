@@ -1,9 +1,10 @@
-from typing import Any, Callable, NoReturn, Type, TypeVar
+from typing import Any, Callable, Type, TypeVar
 
 import sqlalchemy as sql
 
 from src.common.exceptions import ObjectDoesNotExistException
-from src.common.base.dto import BaseDTO
+from src.common.base.dto import BaseDTO, Entity
+from src.common.utils import raise_exc
 from src.common.utils.fields import SelectedFields
 from src.users.dto import UserDTO
 from src.products.dto import ReviewDTO, ProductDTO
@@ -117,7 +118,7 @@ def _get_method(model: Type[SQLAlchemyModel]) -> Callable:
         if not values:
             raise ObjectDoesNotExistException(model.__name__, object_id=id)
         data = {}
-        for i, field in enumerate(fields):
+        for i, field in enumerate(fields[0].fields):
             data[field] = values[i]
         dto_class = MODELS_RELATED_TO_DTO[model]
         return dto_class(**data)
@@ -194,29 +195,20 @@ def _select_query_constructor(model: Type[SQLAlchemyModel]):
     return construct_select_query
 
 
-def _get_model_fields_with_strings_repr(
-    fields: list[str],
-    model: Type[SQLAlchemyModel],
-) -> tuple[list[Any], list[str]]:
-    model_fields: list[str] = []
-    sql_fields: list[Any] = []
+def _models_to_join(fields: list[SelectedFields]) -> tuple[bool, bool, bool]:
+    """
+    Returns bool values for models that need to join from SelectedFields:
+
+    `(join_user, join_product, join_review)`
+    """
+    join_user: bool = False
+    join_product: bool = False
+    join_review: bool = False
     for field in fields:
-        splitted = field.split('.')
-        if len(splitted) == 1:
-            sql_fields.append(getattr(model, splitted[0]))
-            continue
-        model_name = splitted[0].capitalize()
-        if model_name == 'User':
-            sql_fields.append(getattr(User, splitted[1]))
-            model_fields.append(User)
-        elif model_name == 'Product':
-            model_fields.append(Product)
-            sql_fields.append(getattr(Product, splitted[1]))
-        elif model_name == 'Review':
-            model_fields.append(Review)
-            sql_fields.append(getattr(Review, splitted[1]))
-    return sql_fields, model_fields
-
-
-def raise_exc(exc: Exception) -> NoReturn:
-    raise exc
+        if field.owner.lower() in Entity.USER + 's':
+            join_user = True
+        elif field.owner.lower() in Entity.PRODUCT + 's':
+            join_product = True
+        elif field.owner.lower() in Entity.REVIEW + 's':
+            join_review = True
+    return join_user, join_product, join_review

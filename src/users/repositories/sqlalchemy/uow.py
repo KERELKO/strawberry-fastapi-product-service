@@ -5,6 +5,7 @@ from src.users.repositories.base import AbstractUserUnitOfWork
 
 class SQLAlchemyUserUnitOfWork(BaseSQLAlchemyUnitOfWork, AbstractUserUnitOfWork):
     def __init__(self, repo: SQLAlchemyUserRepository) -> None:
+        super().__init__()
         self.repo = repo
 
     async def __aenter__(self):

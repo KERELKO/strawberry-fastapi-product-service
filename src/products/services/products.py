@@ -51,9 +51,12 @@ class ProductService:
             new_product: ProductDTO = await self.uow.products.create(dto=dto)
         return new_product
 
-    async def update_product(self, id: int, dto: ProductDTO) -> ProductDTO:
+    async def update_product(self, id: int, dto: ProductDTO) -> ProductDTO | None:
         async with self.uow:
-            updated_product: ProductDTO = await self.uow.products.update(dto=dto, id=id)
+            try:
+                updated_product: ProductDTO = await self.uow.products.update(dto=dto, id=id)
+            except ObjectDoesNotExistException:
+                return None
             await self.uow.commit()
         return updated_product
 

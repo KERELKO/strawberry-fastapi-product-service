@@ -22,7 +22,7 @@ class AbstractRepository(Generic[T], ABC):
     async def create(self, dto: T) -> T:
         raise NotImplementedError
 
-    async def update(self, id: int, dto: T) -> T:
+    async def update(self, id: int, dto: T) -> T | None:
         raise NotImplementedError
 
     async def delete(self, id: int) -> bool:

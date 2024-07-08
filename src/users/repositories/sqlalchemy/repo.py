@@ -23,8 +23,8 @@ class SQLAlchemyUserRepository(AbstractUserRepository, BaseSQLAlchemyRepository)
         user_id = queries.get('id', None)
         offset = queries.get('offset', None)
         limit = queries.get('limit', None)
-        _fields = fields[0] if len(fields) > 0 else raise_exc(Exception('No fields'))
-        fields_to_select: list[InstrumentedAttribute] = [getattr(User, f) for f in _fields.fields]
+        _fields = fields[0].fields if len(fields) > 0 else raise_exc(Exception('No fields'))
+        fields_to_select: list[InstrumentedAttribute] = [getattr(User, f) for f in _fields]
         stmt = sql.select(*fields_to_select)
 
         if user_id is not None:

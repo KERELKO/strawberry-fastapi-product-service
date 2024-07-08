@@ -14,12 +14,14 @@ from src.users.graphql.schemas.queries import User
 class Query:
     @strawberry.field
     async def user(self, id: strawberry.ID, info: strawberry.Info) -> User | None:
-        user = await StrawberryUserResolver.get(id=id, fields=get_required_fields(info))
+        resolver = Container.resolve(StrawberryUserResolver)
+        user = await resolver.get(id=id, fields=get_required_fields(info))
         return user
 
     @strawberry.field
     async def users(self, info: strawberry.Info, offset: int = 0, limit: int = 20) -> list[User]:
-        users: list[User] = await StrawberryUserResolver.get_list(
+        resolver = Container.resolve(StrawberryUserResolver)
+        users: list[User] = await resolver.get_list(
             fields=get_required_fields(info),
             offset=offset,
             limit=limit,
@@ -51,7 +53,8 @@ class Query:
 
     @strawberry.field
     async def product(self, id: strawberry.ID, info: strawberry.Info) -> Product | None:
-        product = await StrawberryProductResolver.get(
+        resolver = Container.resolve(StrawberryProductResolver)
+        product = await resolver.get(
             id=id, fields=get_required_fields(info)
         )
         return product
@@ -63,7 +66,8 @@ class Query:
         offset: int = 0,
         limit: int = 20,
     ) -> list[Product]:
-        products: list[Product] = await StrawberryProductResolver.get_list(
+        resolver = Container.resolve(StrawberryProductResolver)
+        products: list[Product] = await resolver.get_list(
             fields=get_required_fields(info),
             offset=offset,
             limit=limit,

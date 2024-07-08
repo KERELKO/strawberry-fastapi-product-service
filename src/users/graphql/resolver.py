@@ -32,7 +32,7 @@ class StrawberryUserResolver(BaseStrawberryResolver):
         fields: list[Selection],
     ) -> User | None:
         required_fields = self._selections_to_selected_fields(fields=fields)
-        user = await self.service.get_user_by_id(self, id=parse_id(id), fields=required_fields)
+        user = await self.service.get_user_by_id(id=parse_id(id), fields=required_fields)
         return User(**user.model_dump())
 
     async def get_by_review_id(

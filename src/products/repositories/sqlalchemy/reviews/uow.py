@@ -10,6 +10,7 @@ class SQLAlchemyReviewUnitOfWork(BaseSQLAlchemyUnitOfWork, AbstractReviewUnitOfW
         self,
         repo: SQLAlchemyReviewRepository | SQLAlchemyAggregatedReviewRepository,
     ) -> None:
+        super().__init__()
         self.repo = repo
 
     async def __aenter__(self):
