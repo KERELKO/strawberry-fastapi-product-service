@@ -90,7 +90,7 @@ class SQLAlchemyAggregatedReviewRepository(SQLAlchemyReviewRepository):
             sql.select(Review).offset(offset).limit(limit), join_user, join_product,
         )
         if user_id is not None:
-            stmt = stmt.where(Review.user.id == user_id)
+            stmt = stmt.where(Review.user_id == user_id)
         if product_id is not None:
             stmt = stmt.where(Review.product_id == product_id)
 

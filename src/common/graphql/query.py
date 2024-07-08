@@ -1,7 +1,6 @@
 import strawberry
 
 from src.common.di import Container
-from src.common.utils.graphql import get_required_fields
 from src.products.graphql.resolvers.reviews import StrawberryReviewResolver
 from src.products.graphql.resolvers.products import StrawberryProductResolver
 from src.products.graphql.schemas.products.queries import Product
@@ -15,14 +14,14 @@ class Query:
     @strawberry.field
     async def user(self, id: strawberry.ID, info: strawberry.Info) -> User | None:
         resolver = Container.resolve(StrawberryUserResolver)
-        user = await resolver.get(id=id, fields=get_required_fields(info))
+        user = await resolver.get(id=id, fields=info.selected_fields)
         return user
 
     @strawberry.field
     async def users(self, info: strawberry.Info, offset: int = 0, limit: int = 20) -> list[User]:
         resolver = Container.resolve(StrawberryUserResolver)
         users: list[User] = await resolver.get_list(
-            fields=get_required_fields(info),
+            fields=info.selected_fields,
             offset=offset,
             limit=limit,
         )
@@ -55,7 +54,7 @@ class Query:
     async def product(self, id: strawberry.ID, info: strawberry.Info) -> Product | None:
         resolver = Container.resolve(StrawberryProductResolver)
         product = await resolver.get(
-            id=id, fields=get_required_fields(info)
+            id=id, fields=info.selected_fields,
         )
         return product
 
@@ -68,7 +67,7 @@ class Query:
     ) -> list[Product]:
         resolver = Container.resolve(StrawberryProductResolver)
         products: list[Product] = await resolver.get_list(
-            fields=get_required_fields(info),
+            fields=info.selected_fields,
             offset=offset,
             limit=limit,
         )

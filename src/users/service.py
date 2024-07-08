@@ -20,6 +20,7 @@ class UserService:
             users: list[UserDTO] = await self.uow.users.get_list(
                 fields=fields, offset=offset, limit=limit,
             )
+            await self.uow.commit()
         return users
 
     async def get_user_by_id(
@@ -31,7 +32,8 @@ class UserService:
             try:
                 user: UserDTO = await self.uow.users.get(id=id, fields=fields)
             except ObjectDoesNotExistException:
-                return None
+                user = None
+            await self.uow.commit()
         return user
 
     async def get_user_by_review_id(
@@ -45,13 +47,14 @@ class UserService:
                     review_id=review_id, fields=fields,
                 )
             except ObjectDoesNotExistException:
-                return None
+                user = None
+            await self.uow.commit()
         return user
 
     async def create_user(self, dto: UserDTO) -> UserDTO:
         async with self.uow:
             new_user: UserDTO = await self.uow.users.create(dto=dto)
-            self.uow.commit()
+            await self.uow.commit()
         return new_user
 
     async def update_user(self, id: int, dto: UserDTO) -> UserDTO:

@@ -24,8 +24,8 @@ class User(IUser):
         limit: int = 20,
     ) -> list[Review]:
         from src.common.di import Container
-        resolver = Container.resolve(StrawberryReviewResolver)
 
+        resolver = Container.resolve(StrawberryReviewResolver)
         if self._reviews:
             return self._reviews
         if not self.id:

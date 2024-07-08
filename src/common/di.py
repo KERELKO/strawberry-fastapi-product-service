@@ -15,7 +15,6 @@ from src.products.repositories.base import (
     AbstractReviewUnitOfWork,
 )
 from src.products.repositories.sqlalchemy.products.repo import (
-    SQLAlchemyProductRepository,
     SQLAlchemyAggregatedProductRepository,
 )
 from src.products.repositories.sqlalchemy.products.uow import SQLAlchemyProductUnitOfWork
@@ -27,7 +26,9 @@ from src.products.repositories.sqlalchemy.reviews.uow import SQLAlchemyReviewUni
 from src.products.services.products import ProductService
 from src.products.services.reviews import ReviewService
 from src.users.repositories.base import AbstractUserRepository, AbstractUserUnitOfWork
-from src.users.repositories.sqlalchemy.repo import SQLAlchemyUserRepository
+from src.users.repositories.sqlalchemy.repo import (
+    SQLAlchemyAggregatedUserRepository,
+)
 from src.users.repositories.sqlalchemy.uow import SQLAlchemyUserUnitOfWork
 from src.users.service import UserService
 
@@ -53,10 +54,10 @@ class Container:
         logger = logging.getLogger('Logger')
         container.register(logging.Logger, instance=logger)
 
-        container.register(AbstractUserRepository, SQLAlchemyUserRepository)
+        container.register(AbstractUserRepository, SQLAlchemyAggregatedUserRepository)
         container.register(
             AbstractUserUnitOfWork,
-            instance=SQLAlchemyUserUnitOfWork(repo=SQLAlchemyUserRepository)
+            instance=SQLAlchemyUserUnitOfWork(repo=SQLAlchemyAggregatedUserRepository)
         )
 
         container.register(AbstractReviewRepository, SQLAlchemyAggregatedReviewRepository)
@@ -65,7 +66,7 @@ class Container:
             instance=SQLAlchemyReviewUnitOfWork(SQLAlchemyAggregatedReviewRepository)
         )
 
-        container.register(AbstractProductRepository, SQLAlchemyProductRepository)
+        container.register(AbstractProductRepository, SQLAlchemyAggregatedProductRepository)
         container.register(
             AbstractProductUnitOfWork,
             instance=SQLAlchemyProductUnitOfWork(SQLAlchemyAggregatedProductRepository)

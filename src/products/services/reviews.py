@@ -15,7 +15,8 @@ class ReviewService:
             try:
                 review = await self.uow.reviews.get(id=id, fields=fields)
             except ObjectDoesNotExistException:
-                return None
+                review = None
+            await self.uow.commit()
         return review
 
     async def get_review_list(
@@ -34,12 +35,13 @@ class ReviewService:
                 user_id=user_id,
                 product_id=product_id,
             )
+            await self.uow.commit()
         return reviews
 
     async def create_review(self, dto: ReviewDTO) -> ReviewDTO:
         async with self.uow:
             new_review: ReviewDTO = await self.uow.reviews.create(dto=dto)
-            self.uow.commit()
+            await self.uow.commit()
         return new_review
 
     async def update_review(self, id: int, dto: ReviewDTO) -> ReviewDTO | None:
@@ -47,7 +49,7 @@ class ReviewService:
             try:
                 updated_review: ReviewDTO = await self.uow.reviews.update(dto=dto, id=id)
             except ObjectDoesNotExistException:
-                return None
+                updated_review = None
             await self.uow.commit()
         return updated_review
 

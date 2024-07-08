@@ -17,7 +17,8 @@ class ProductService:
                     fields=fields, id=id
                 )
             except ObjectDoesNotExistException:
-                return None
+                product = None
+            await self.uow.commit()
         return product
 
     async def get_products_list(
@@ -30,6 +31,7 @@ class ProductService:
             products = await self.uow.products.get_list(
                 fields=fields, offset=offset, limit=limit,
             )
+            await self.uow.commit()
         return products
 
     async def get_by_review_id(
@@ -43,12 +45,14 @@ class ProductService:
                     fields=fields, review_id=review_id,
                 )
             except ObjectDoesNotExistException:
-                return None
+                product = None
+            await self.uow.commit()
         return product
 
     async def create_product(self, dto: ProductDTO) -> ProductDTO:
         async with self.uow:
             new_product: ProductDTO = await self.uow.products.create(dto=dto)
+            await self.uow.commit()
         return new_product
 
     async def update_product(self, id: int, dto: ProductDTO) -> ProductDTO | None:
@@ -56,7 +60,7 @@ class ProductService:
             try:
                 updated_product: ProductDTO = await self.uow.products.update(dto=dto, id=id)
             except ObjectDoesNotExistException:
-                return None
+                updated_product = None
             await self.uow.commit()
         return updated_product
 

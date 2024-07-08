@@ -98,7 +98,10 @@ class SQLAlchemyAggregatedProductRepository(SQLAlchemyProductRepository):
         return product
 
     async def get_by_review_id(self, review_id: int, fields: list[SelectedFields]) -> ProductDTO:
-        return await super().get_by_review_id(self, reivew_id=review_id, fields=fields)
+        review = self.session.get(Review, id=review_id)
+        if not review:
+            raise ObjectDoesNotExistException('Review', object_id=review_id)
+        return await self.get(id=review.product_id, fields=fields)
 
     async def get_list(
         self,
