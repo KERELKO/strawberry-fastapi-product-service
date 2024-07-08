@@ -1,10 +1,12 @@
 from abc import abstractmethod
+from types import TracebackType
 from typing import Any
 
 import sqlalchemy as sql
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from src.common.base.uow import AbstractUnitOfWork
+
 from .config import async_session_factory
 
 
@@ -39,8 +41,14 @@ class BaseSQLAlchemyUnitOfWork(AbstractUnitOfWork):
     async def __aenter__(self) -> None:
         self.session = self.session_factory()
 
-    async def __aexit__(self, *args) -> None:
-        await self.rollback()
+    async def __aexit__(
+        self,
+        exception: type[BaseException] | None,
+        value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
+        if exception:
+            await self.session.rollback()
         await self.session.close()
 
     async def rollback(self) -> None:

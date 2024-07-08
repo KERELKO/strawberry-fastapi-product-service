@@ -17,7 +17,7 @@ def init_db_tables():
 
 def graphql_app() -> GraphQLRouter:
     schema = strawberry.Schema(query=Query, mutation=Mutation)
-    graphql = GraphQLRouter(schema)
+    graphql: GraphQLRouter = GraphQLRouter(schema)
 
     return graphql
 

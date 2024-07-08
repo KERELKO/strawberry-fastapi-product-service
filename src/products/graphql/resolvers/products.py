@@ -1,84 +1,60 @@
+from dataclasses import dataclass
+
 import strawberry
 from strawberry.types.nodes import Selection
 
 from src.common.base.graphql.resolvers import BaseStrawberryResolver
-from src.common.di import Container
-from src.common.exceptions import ObjectDoesNotExistException
 from src.common.utils.graphql import parse_id
 from src.products.dto import ProductDTO
 from src.products.graphql.schemas.products.inputs import ProductInput, UpdateProductInput
 from src.products.graphql.schemas.products.queries import DeletedProduct, Product
-from src.products.repositories.base import AbstractProductUnitOfWork
+from src.products.services.products import ProductService
+from src.products.graphql.converters.products import StrawberryProductConverter
 
 
+@dataclass(eq=False, repr=False)
 class StrawberryProductResolver(BaseStrawberryResolver):
-    @classmethod
+    converter = StrawberryProductConverter
+    service: ProductService
+
     async def get_list(
-        cls,
+        self,
         fields: list[Selection],
         offset: int = 0,
         limit: int = 20,
     ) -> list[Product]:
-        required_fields = await cls._selections_to_strings(fields)
-        uow = Container.resolve(AbstractProductUnitOfWork)
-        async with uow:
-            products = await uow.products.get_list(
-                fields=required_fields, offset=offset, limit=limit,
-            )
-            await uow.commit()
-        return [Product(**p.model_dump()) for p in products]
+        required_fields = self._selections_to_selected_fields(fields)
+        products = await self.service.get_products_list(
+            fields=required_fields, offset=offset, limit=limit,
+        )
+        return [self.converter.convert(p) for p in products]
 
-    @classmethod
-    async def get(cls, id: strawberry.ID, fields: list[Selection]) -> Product | None:
-        required_fields = await cls._selections_to_strings(fields)
-        uow = Container.resolve(AbstractProductUnitOfWork)
-        async with uow:
-            try:
-                product = await uow.products.get(fields=required_fields, id=parse_id(id))
-            except ObjectDoesNotExistException:
-                return None
-            await uow.commit()
-        return Product(**product.model_dump())
+    async def get(self, id: strawberry.ID, fields: list[Selection]) -> Product | None:
+        required_fields = self._selections_to_selected_fields(fields)
+        product = await self.service.get_product_by_id(id=parse_id(id), fields=required_fields)
+        return self.converter.convert(product) if product else None
 
-    @classmethod
     async def get_by_review_id(
-        cls,
+        self,
         review_id: strawberry.ID,
         fields: list[Selection],
     ) -> Product | None:
-        required_fields = await cls._selections_to_strings(fields)
-        uow = Container.resolve(AbstractProductUnitOfWork)
-        async with uow:
-            try:
-                product = await uow.products.get_by_review_id(
-                    fields=required_fields, review_id=parse_id(review_id),
-                )
-            except ObjectDoesNotExistException:
-                return None
-            await uow.commit()
-        return Product(**product.model_dump())
+        required_fields = self._selections_to_selected_fields(fields)
+        product = await self.service.get_by_review_id(
+            review_id=parse_id(review_id), fields=required_fields,
+        )
+        return self.converter.convert(product) if product else None
 
-    @classmethod
-    async def create(cls, input: ProductInput) -> Product:
+    async def create(self, input: ProductInput) -> Product:
         dto = ProductDTO(**strawberry.asdict(input))
-        uow = Container.resolve(AbstractProductUnitOfWork)
-        async with uow:
-            new_product: ProductDTO = await uow.products.create(dto=dto)
-        return Product(**new_product.model_dump())
+        new_product = await self.service.create_product(dto=dto)
+        return self.converter.convert(new_product)
 
-    @classmethod
-    async def update(cls, id: strawberry.ID, input: UpdateProductInput) -> Product:
+    async def update(self, id: strawberry.ID, input: UpdateProductInput) -> Product | None:
         dto = ProductDTO(**strawberry.asdict(input))
-        uow = Container.resolve(AbstractProductUnitOfWork)
-        async with uow:
-            updated_product: ProductDTO = await uow.products.update(dto=dto, id=parse_id(id))
-            await uow.commit()
-        return Product(**updated_product.model_dump())
+        updated_product = await self.service.update_product(id=parse_id(id), dto=dto)
+        return self.converter.convert(updated_product) if updated_product else None
 
-    @classmethod
-    async def delete(cls, id: strawberry.ID) -> DeletedProduct:
-        uow = Container.resolve(AbstractProductUnitOfWork)
-        async with uow:
-            is_deleted = await uow.products.delete(id=parse_id(id))
-            await uow.commit()
+    async def delete(self, id: strawberry.ID) -> DeletedProduct:
+        is_deleted = await self.service.delete_product(id=parse_id(id))
         return DeletedProduct(success=is_deleted, id=parse_id(id))

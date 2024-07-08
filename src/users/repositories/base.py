@@ -2,12 +2,13 @@ from abc import abstractmethod
 
 from src.common.base.uow import AbstractUnitOfWork
 from src.common.base.repo import AbstractRepository
+from src.common.utils.fields import SelectedFields
 from src.users.dto import UserDTO
 
 
 class AbstractUserRepository(AbstractRepository[UserDTO]):
     @abstractmethod
-    async def get_by_review_id(self, review_id: int, fields: list[str]) -> UserDTO:
+    async def get_by_review_id(self, review_id: int, fields: list[SelectedFields]) -> UserDTO:
         ...
 
 
