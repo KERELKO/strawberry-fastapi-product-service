@@ -12,19 +12,19 @@ from src.products.graphql.schemas.reviews.queries import DeletedReview
 class ReviewMutations:
     @strawberry.mutation
     async def create_review(self, input: ReviewInput) -> IReview:
-        resolver = Container.resolve(StrawberryReviewResolver)
+        resolver: StrawberryReviewResolver = Container.resolve(StrawberryReviewResolver)
         new_review = await resolver.create(input=input)
         return new_review
 
     @strawberry.mutation
     async def update_review(self, input: UpdateReviewInput, id: strawberry.ID) -> IReview:
-        resolver = Container.resolve(StrawberryReviewResolver)
+        resolver: StrawberryReviewResolver = Container.resolve(StrawberryReviewResolver)
         updated_review = await resolver.update(input=input, id=id)
         return updated_review
 
     @strawberry.mutation
     async def delete_review(self, id: strawberry.ID) -> DeletedReview:
-        resolver = Container.resolve(StrawberryReviewResolver)
+        resolver: StrawberryReviewResolver = Container.resolve(StrawberryReviewResolver)
         try:
             deleted: DeletedReview = await resolver.delete(id=id)
         except ObjectDoesNotExistException:

@@ -47,7 +47,7 @@ class ReviewService:
     async def update_review(self, id: int, dto: ReviewDTO) -> ReviewDTO | None:
         async with self.uow:
             try:
-                updated_review: ReviewDTO = await self.uow.reviews.update(dto=dto, id=id)
+                updated_review: ReviewDTO | None = await self.uow.reviews.update(dto=dto, id=id)
             except ObjectDoesNotExistException:
                 updated_review = None
             await self.uow.commit()

@@ -8,7 +8,7 @@ from . import constants
 class Config(BaseSettings):
     model_config = SettingsConfigDict(env_file='.env', extra='allow')
 
-    LISTEN_SQL_QUERIES: bool = True
+    LISTEN_SQL_QUERIES: bool = False
     DEBUG: bool = True
 
     # Postgres

@@ -40,8 +40,10 @@ class StrawberryProductResolver(BaseStrawberryResolver):
         fields: list[Selection],
     ) -> Product | None:
         required_fields = self._selections_to_selected_fields(fields)
-        product = await self.service.get_by_review_id(review_id=review_id, fields=required_fields)
-        return self.converter.convert(product)
+        product = await self.service.get_by_review_id(
+            review_id=parse_id(review_id), fields=required_fields,
+        )
+        return self.converter.convert(product) if product else None
 
     async def create(self, input: ProductInput) -> Product:
         dto = ProductDTO(**strawberry.asdict(input))

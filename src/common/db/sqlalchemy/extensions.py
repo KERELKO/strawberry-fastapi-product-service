@@ -163,7 +163,7 @@ def _query_executor() -> Callable:
         first: bool = False,
         **kwargs,
     ) -> list[tuple[Any]] | tuple[Any]:
-        stmt = await self._construct_select_query(*args, **kwargs)
+        stmt = self._construct_select_query(*args, **kwargs)
         result = await self.session.execute(stmt)
         if first:
             return result.first()  # type: ignore
@@ -172,16 +172,16 @@ def _query_executor() -> Callable:
 
 
 def _select_query_constructor(model: Type[SQLAlchemyModel]):
-    async def construct_select_query(
+    def construct_select_query(
         self,
         fields: list[SelectedFields],
         **queries,
     ) -> sql.Select:
         object_id = queries.get('id', None)
-        fields = fields[0].fields if len(fields) > 0 else raise_exc(
+        _fields = fields[0].fields if len(fields) > 0 else raise_exc(
             Exception('Fields not selected'),
         )
-        fields_to_select = [getattr(model, f) for f in fields]
+        fields_to_select = [getattr(model, f) for f in _fields]
         offset = queries.get('offset', None)
         limit = queries.get('limit', None)
         stmt = sql.select(*fields_to_select)

@@ -26,7 +26,7 @@ class Review(IReview):
         from src.products.graphql.resolvers.products import StrawberryProductResolver
         from src.common.di import Container
 
-        resolver = Container.resolve(StrawberryProductResolver)
+        resolver: StrawberryProductResolver = Container.resolve(StrawberryProductResolver)
         if self._product is not None:
             return self._product
         if self._product_id:
@@ -46,7 +46,7 @@ class Review(IReview):
         from src.users.graphql.resolver import StrawberryUserResolver
         from src.common.di import Container
 
-        resolver = Container.resolve(StrawberryUserResolver)
+        resolver: StrawberryUserResolver = Container.resolve(StrawberryUserResolver)
         if self._user is not None:
             return self._user
         if not self.id:

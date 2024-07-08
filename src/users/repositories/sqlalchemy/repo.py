@@ -1,3 +1,4 @@
+from typing import Any, Sequence
 import sqlalchemy as sql
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.attributes import InstrumentedAttribute
@@ -45,9 +46,9 @@ class SQLAlchemyUserRepository(AbstractUserRepository, BaseSQLAlchemyRepository)
         limit: int = 20,
     ) -> list[UserDTO]:
         list_values = await self._execute_query(fields=fields, offset=offset, limit=limit)
-        dto_list = []
+        dto_list: list[UserDTO] = []
         for values in list_values:
-            data = {field: value for field, value in zip(fields, values)}
+            data = {field: value for field, value in zip(fields[0].fields, values)}
             dto_list.append(UserDTO(**data))
         return dto_list
 
@@ -57,8 +58,8 @@ class SQLAlchemyUserRepository(AbstractUserRepository, BaseSQLAlchemyRepository)
         )
         if not values:
             raise ObjectDoesNotExistException('User')
-        data = {}
-        for value_index, field in enumerate(fields):
+        data: dict[str, Any] = {}
+        for value_index, field in enumerate(fields[0].fields):
             data[field] = values[value_index]
         return UserDTO(**data)
 
@@ -67,7 +68,7 @@ class SQLAlchemyAggregatedUserRepository(SQLAlchemyUserRepository):
     async def _fetch_one_with_related(self, join_reviews: bool, **filters) -> User | None:
         user_id = filters.get('id', None)
         review_id = filters.get('review_id', None)
-        stmt = sql.Select(User)
+        stmt: sql.Select = sql.Select(User)
         if join_reviews:
             stmt = stmt.options(joinedload(User.reviews))
         if user_id is not None:
@@ -78,10 +79,10 @@ class SQLAlchemyAggregatedUserRepository(SQLAlchemyUserRepository):
         result = await self.session.execute(stmt)
         return result.unique().scalar_one_or_none()
 
-    async def _fetch_many_with_related(self, join_reviews: bool, **filters) -> list[User]:
+    async def _fetch_many_with_related(self, join_reviews: bool, **filters) -> Sequence[User]:
         offset = filters.get('offset', 0)
         limit = filters.get('limit', 20)
-        stmt = sql.Select(User).offset(offset).limit(limit)
+        stmt: sql.Select = sql.Select(User).offset(offset).limit(limit)
         if join_reviews:
             stmt = stmt.options(joinedload(User.reviews))
         result = await self.session.execute(stmt)
@@ -91,15 +92,15 @@ class SQLAlchemyAggregatedUserRepository(SQLAlchemyUserRepository):
         _, _, join_review = _models_to_join(fields)
         _user = await self._fetch_one_with_related(id=id, join_reviews=join_review)
         if not _user:
-            raise ObjectDoesNotExistException(User.__name__, id=id)
+            raise ObjectDoesNotExistException(User.__name__, object_id=id)
         user = UserDTO(**_user.as_dict())
         if join_review:
             reviews = [ReviewDTO(**r.as_dict()) for r in _user.reviews]
-            user.reviews = reviews
+            user.reviews = reviews  # type: ignore
         return user
 
     async def get_by_review_id(self, review_id: int, fields: list[SelectedFields]) -> UserDTO:
-        review: Review | None = await self.session.get(Review, id=review_id)
+        review: Review | None = await self.session.get(Review, review_id)
         if not review:
             raise ObjectDoesNotExistException('Review', object_id=review_id)
         return await self.get(id=review.user_id, fields=fields)
@@ -119,6 +120,6 @@ class SQLAlchemyAggregatedUserRepository(SQLAlchemyUserRepository):
             user = UserDTO(**_user.as_dict())
             if join_review:
                 reviews = [ReviewDTO(**r.as_dict()) for r in _user.reviews]
-                user.reviews = reviews
+                user.reviews = reviews  # type: ignore
             users.append(user)
         return users

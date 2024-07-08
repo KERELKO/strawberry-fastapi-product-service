@@ -38,7 +38,7 @@ class StrawberryReviewResolver(BaseStrawberryResolver):
         return [StrawberryReviewConverter.convert(r) for r in reviews]
 
     async def get(self, id: strawberry.ID, fields: list[Selection]) -> Review | None:
-        required_fields: list[SelectedFields] = self._selections_to_strings(
+        required_fields: list[SelectedFields] = self._selections_to_selected_fields(
             fields, remove_related=False,
         )
         review = await self.service.get_review_by_id(fields=required_fields, id=parse_id(id))
@@ -58,7 +58,7 @@ class StrawberryReviewResolver(BaseStrawberryResolver):
 
         return Review(**data)
 
-    async def update(self, id: strawberry.ID, input: UpdateReviewInput) -> Review:
+    async def update(self, id: strawberry.ID, input: UpdateReviewInput) -> Review | None:
         dto = ReviewDTO(**strawberry.asdict(input))
         review = await self.service.update_review(id=parse_id(id), dto=dto)
         if not review:

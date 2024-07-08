@@ -1,3 +1,4 @@
+from typing import Sequence
 import sqlalchemy as sql
 from sqlalchemy.orm import joinedload
 
@@ -53,7 +54,7 @@ class SQLAlchemyReviewRepository(BaseSQLAlchemyRepository):
         )
         dto_list = []
         for values in list_values:
-            data = {f: v for f, v in zip(fields, values)}
+            data = {f: v for f, v in zip(fields[0].fields, values)}
             dto_list.append(ReviewDTO(**data))
         return dto_list
 
@@ -81,7 +82,7 @@ class SQLAlchemyAggregatedReviewRepository(SQLAlchemyReviewRepository):
         join_user: bool,
         join_product: bool,
         **filters,
-    ) -> list[Review]:
+    ) -> Sequence[Review]:
         offset = filters.get('offset', 0)
         limit = filters.get('limit', 20)
         user_id = filters.get('user_id', None)
@@ -120,10 +121,10 @@ class SQLAlchemyAggregatedReviewRepository(SQLAlchemyReviewRepository):
         review = ReviewDTO(**_review.as_dict())
         if join_product:
             product = ProductDTO(**_review.product.as_dict())
-            review.product = product
+            review.product = product  # type: ignore
         if join_user:
             user = UserDTO(**_review.user.as_dict())
-            review.user = user
+            review.user = user  # type: ignore
         return review
 
     async def get_list(
@@ -148,9 +149,9 @@ class SQLAlchemyAggregatedReviewRepository(SQLAlchemyReviewRepository):
             review = ReviewDTO(**_review.as_dict())
             if join_product:
                 product = ProductDTO(**_review.product.as_dict())
-                review.product = product
+                review.product = product  # type: ignore
             if join_user:
                 user = UserDTO(**_review.user.as_dict())
-                review.user = user
+                review.user = user  # type: ignore
             reviews.append(review)
         return reviews

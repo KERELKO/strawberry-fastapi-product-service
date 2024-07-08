@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Sequence
 
 import sqlalchemy as sql
 from sqlalchemy.orm import joinedload
@@ -45,7 +45,7 @@ class SQLAlchemyProductRepository(BaseSQLAlchemyRepository):
         values = await self._execute_query(fields=fields, review_id=review_id, first=True)
         if not values:
             raise ObjectDoesNotExistException('Product')
-        data: dict[str, Any] = {f: v for f, v in zip(fields, values)}
+        data: dict[str, Any] = {f: v for f, v in zip(fields[0].fields, values)}
         return ProductDTO(**data)
 
     async def get_list(
@@ -57,7 +57,7 @@ class SQLAlchemyProductRepository(BaseSQLAlchemyRepository):
         list_values = await self._execute_query(fields=fields, offset=offset, limit=limit)
         dto_list = []
         for values in list_values:
-            data = {f: v for f, v in zip(fields, values)}
+            data = {f: v for f, v in zip(fields[0].fields, values)}
             dto_list.append(ProductDTO(**data))
         return dto_list
 
@@ -66,7 +66,7 @@ class SQLAlchemyAggregatedProductRepository(SQLAlchemyProductRepository):
     async def _fetch_one_with_related(self, join_reviews: bool, **filters) -> Product | None:
         product_id = filters.get('id', None)
         review_id = filters.get('review_id', None)
-        stmt = sql.Select(Product)
+        stmt: sql.Select = sql.Select(Product)
         if join_reviews:
             stmt = stmt.options(joinedload(Product.reviews))
         if product_id is not None:
@@ -77,10 +77,10 @@ class SQLAlchemyAggregatedProductRepository(SQLAlchemyProductRepository):
         result = await self.session.execute(stmt)
         return result.unique().scalar_one_or_none()
 
-    async def _fetch_many_with_related(self, join_reviews: bool, **filters) -> list[Product]:
+    async def _fetch_many_with_related(self, join_reviews: bool, **filters) -> Sequence[Product]:
         offset = filters.get('offset', 0)
         limit = filters.get('limit', 20)
-        stmt = sql.Select(Product).offset(offset).limit(limit)
+        stmt: sql.Select = sql.Select(Product).offset(offset).limit(limit)
         if join_reviews:
             stmt = stmt.options(joinedload(Product.reviews))
         result = await self.session.execute(stmt)
@@ -90,15 +90,15 @@ class SQLAlchemyAggregatedProductRepository(SQLAlchemyProductRepository):
         _, _, join_review = _models_to_join(fields)
         _product = await self._fetch_one_with_related(id=id, join_reviews=join_review)
         if not _product:
-            raise ObjectDoesNotExistException(Product.__name__, id=id)
+            raise ObjectDoesNotExistException(Product.__name__, object_id=id)
         product = ProductDTO(**_product.as_dict())
         if join_review:
             reviews = [ReviewDTO(**r.as_dict()) for r in _product.reviews]
-            product.reviews = reviews
+            product.reviews = reviews  # type: ignore
         return product
 
     async def get_by_review_id(self, review_id: int, fields: list[SelectedFields]) -> ProductDTO:
-        review = self.session.get(Review, id=review_id)
+        review = await self.session.get(Review, review_id)
         if not review:
             raise ObjectDoesNotExistException('Review', object_id=review_id)
         return await self.get(id=review.product_id, fields=fields)
@@ -118,6 +118,6 @@ class SQLAlchemyAggregatedProductRepository(SQLAlchemyProductRepository):
             product = ProductDTO(**_product.as_dict())
             if join_review:
                 reviews = [ReviewDTO(**r.as_dict()) for r in _product.reviews]
-                product.reviews = reviews
+                product.reviews = reviews  # type: ignore
             products.append(product)
         return products

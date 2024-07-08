@@ -5,11 +5,11 @@ from .reviews import StrawberryReviewConverter
 
 
 class StrawberryProductConverter:
-    review_converter: StrawberryReviewConverter = StrawberryReviewConverter
+    review_converter: type[StrawberryReviewConverter] = StrawberryReviewConverter
 
     @classmethod
     def convert(cls, dto: ProductDTO) -> Product:
-        reviews = {}
+        reviews = []
         data = dto.model_dump()
         if hasattr(dto, 'reviews'):
             reviews = [cls.review_converter.convert(p) for p in dto.reviews]

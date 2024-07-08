@@ -30,7 +30,7 @@ class UserService:
     ) -> UserDTO | None:
         async with self.uow:
             try:
-                user: UserDTO = await self.uow.users.get(id=id, fields=fields)
+                user: UserDTO | None = await self.uow.users.get(id=id, fields=fields)
             except ObjectDoesNotExistException:
                 user = None
             await self.uow.commit()
@@ -43,7 +43,7 @@ class UserService:
     ) -> UserDTO | None:
         async with self.uow:
             try:
-                user: UserDTO = await self.uow.users.get_by_review_id(
+                user: UserDTO | None = await self.uow.users.get_by_review_id(
                     review_id=review_id, fields=fields,
                 )
             except ObjectDoesNotExistException:
@@ -57,9 +57,9 @@ class UserService:
             await self.uow.commit()
         return new_user
 
-    async def update_user(self, id: int, dto: UserDTO) -> UserDTO:
+    async def update_user(self, id: int, dto: UserDTO) -> UserDTO | None:
         async with self.uow:
-            updated_user: UserDTO = await self.uow.users.update(dto=dto, id=id)
+            updated_user: UserDTO | None = await self.uow.users.update(dto=dto, id=id)
             await self.uow.commit()
         return updated_user
 

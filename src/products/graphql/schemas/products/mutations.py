@@ -12,19 +12,19 @@ from src.common.di import Container
 class ProductMutations:
     @strawberry.mutation
     async def create_product(self, input: ProductInput) -> IProduct:
-        resolver = Container.resolve(StrawberryProductResolver)
+        resolver: StrawberryProductResolver = Container.resolve(StrawberryProductResolver)
         new_product = await resolver.create(input=input)
         return new_product
 
     @strawberry.mutation
-    async def update_product(self, id: strawberry.ID, input: UpdateProductInput) -> IProduct:
-        resolver = Container.resolve(StrawberryProductResolver)
+    async def update_product(self, id: strawberry.ID, input: UpdateProductInput) -> IProduct | None:
+        resolver: StrawberryProductResolver = Container.resolve(StrawberryProductResolver)
         updated_product = await resolver.update(input=input, id=id)
         return updated_product
 
     @strawberry.mutation
     async def delete_product(self, id: strawberry.ID) -> DeletedProduct:
-        resolver = Container.resolve(StrawberryProductResolver)
+        resolver: StrawberryProductResolver = Container.resolve(StrawberryProductResolver)
         try:
             deleted = await resolver.delete(id=id)
         except ObjectDoesNotExistException:
