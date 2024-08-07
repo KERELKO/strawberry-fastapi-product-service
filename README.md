@@ -26,7 +26,7 @@
 ### Installation
 1. Install the project with
 ```
-git clone https://github.com/KERELKO/Strawberry-fastapi-product-service
+git clone https://github.com/KERELKO/strawberry-fastapi-product-service
 ```
 2. Move to directory with __Dockerfile__ and create **.env** file based on **.env.example**
 ```
