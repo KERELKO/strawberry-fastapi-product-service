@@ -7,7 +7,7 @@ from src.users.repositories.base import AbstractUserUnitOfWork
 class UserService:
     def _get_uow(self) -> AbstractUserUnitOfWork:
         from src.common.di import Container
-        uow = Container.resolve(AbstractUserUnitOfWork)
+        uow: AbstractUserUnitOfWork = Container.resolve(AbstractUserUnitOfWork)
         return uow
 
     async def get_user_list(

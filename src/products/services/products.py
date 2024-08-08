@@ -7,7 +7,7 @@ from src.products.repositories.base import AbstractProductUnitOfWork
 class ProductService:
     def _get_uow(self) -> AbstractProductUnitOfWork:
         from src.common.di import Container
-        uow = Container.resolve(AbstractProductUnitOfWork)
+        uow: AbstractProductUnitOfWork = Container.resolve(AbstractProductUnitOfWork)
         return uow
 
     async def get_product_by_id(self, id: int, fields: list[SelectedFields]) -> ProductDTO | None:

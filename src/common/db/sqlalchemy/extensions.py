@@ -9,16 +9,16 @@ from src.common.utils.fields import SelectedFields
 from src.users.dto import UserDTO
 from src.products.dto import ReviewDTO, ProductDTO
 
-from .models import User, Product, Review
+from .models import UserORM, ProductORM, ReviewORM
 
 
 MODELS_RELATED_TO_DTO = {
-    User: UserDTO,
-    Product: ProductDTO,
-    Review: ReviewDTO,
+    UserORM: UserDTO,
+    ProductORM: ProductDTO,
+    ReviewORM: ReviewDTO,
 }
 
-SQLAlchemyModel = TypeVar('SQLAlchemyModel', bound=User | Product | Review)
+SQLAlchemyModel = TypeVar('SQLAlchemyModel', bound=UserORM | ProductORM | ReviewORM)
 TypeDTO = TypeVar('TypeDTO', bound=BaseDTO)
 
 

@@ -8,17 +8,17 @@ class Base(DeclarativeBase):
     ...
 
 
-class User(Base):
+class UserORM(Base):
     __tablename__ = 'users'
 
     id: Mapped[int] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(String(50))
-    reviews: Mapped[list['Review']] = relationship(
+    reviews: Mapped[list['ReviewORM']] = relationship(
         back_populates='user', cascade='all, delete-orphan',
     )
 
     def __repr__(self) -> str:
-        return f'SQLAlchemy:User(id={self.id} username={self.username})'
+        return f'UserORM(id={self.id} username={self.username})'
 
     def as_dict(self) -> dict[str, Any]:
         data = {
@@ -28,21 +28,21 @@ class User(Base):
         return data
 
 
-class Review(Base):
+class ReviewORM(Base):
     __tablename__ = 'reviews'
 
     id: Mapped[int] = mapped_column(primary_key=True)
     content: Mapped[str]
 
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
-    user: Mapped['User'] = relationship()
+    user: Mapped['UserORM'] = relationship()
 
     product_id: Mapped[int] = mapped_column(ForeignKey('products.id'))
-    product: Mapped['Product'] = relationship()
+    product: Mapped['ProductORM'] = relationship()
 
     def __repr__(self) -> str:
         return (
-            f'SQLAlchemy:Review(id={self.id} content={self.content} '
+            f'ReviewORM(id={self.id} content={self.content} '
             f'user_id={self.user_id} product_id={self.product_id})'
         )
 
@@ -56,18 +56,18 @@ class Review(Base):
         return data
 
 
-class Product(Base):
+class ProductORM(Base):
     __tablename__ = 'products'
 
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(50))
     description: Mapped[str] = mapped_column()
-    reviews: Mapped[list['Review']] = relationship(
+    reviews: Mapped[list['ReviewORM']] = relationship(
         back_populates='product', cascade='all, delete-orphan',
     )
 
     def __repr__(self) -> str:
-        return f'SQLAlchemy:Product(id={self.id} title={self.title} description={self.description})'
+        return f'ProductORM(id={self.id} title={self.title} description={self.description})'
 
     def as_dict(self) -> dict[str, Any]:
         data = {

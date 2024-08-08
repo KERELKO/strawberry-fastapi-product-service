@@ -4,8 +4,8 @@
 init_db_tables() {
     echo "Initializing database tables..."
     python3 -c "
-from src.main import init_db_tables
-init_db_tables()
+from src.common.db.sqlalchemy.config import db
+db.init()
 "
     echo "Database tables initialized."
 }

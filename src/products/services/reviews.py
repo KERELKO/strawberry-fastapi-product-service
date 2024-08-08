@@ -7,7 +7,7 @@ from src.products.repositories.base import AbstractReviewUnitOfWork
 class ReviewService:
     def _get_uow(self) -> AbstractReviewUnitOfWork:
         from src.common.di import Container
-        uow = Container.resolve(AbstractReviewUnitOfWork)
+        uow: AbstractReviewUnitOfWork = Container.resolve(AbstractReviewUnitOfWork)
         return uow
 
     async def get_review_by_id(self, id: int, fields: list[SelectedFields]) -> ReviewDTO | None:

@@ -1,5 +1,5 @@
-from strawberry.utils.str_converters import to_snake_case
 from strawberry.types.nodes import Selection
+from strawberry.utils.str_converters import to_snake_case
 
 from src.common.utils.fields import SelectedFields
 

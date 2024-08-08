@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import TypeVar, Generic
+from typing import Generic, TypeVar
 
 from src.common.utils.fields import SelectedFields
 

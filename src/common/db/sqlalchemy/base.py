@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from src.common.base.uow import AbstractUnitOfWork
 
-from .config import async_session_factory
+from .config import db
 
 
 class BaseSQLAlchemyRepository:
@@ -35,7 +35,7 @@ class BaseSQLAlchemyRepository:
 
 
 class BaseSQLAlchemyUnitOfWork(AbstractUnitOfWork):
-    def __init__(self, session_factory: async_sessionmaker = async_session_factory) -> None:
+    def __init__(self, session_factory: async_sessionmaker = db.async_session_factory) -> None:
         self.session_factory = session_factory
 
     async def __aenter__(self) -> None:
@@ -48,7 +48,7 @@ class BaseSQLAlchemyUnitOfWork(AbstractUnitOfWork):
         traceback: TracebackType | None,
     ) -> None:
         if exception:
-            await self.session.rollback()
+            await self.rollback()
         await self.session.close()
 
     async def rollback(self) -> None:

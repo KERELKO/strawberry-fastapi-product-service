@@ -5,7 +5,7 @@ class ApplicationException(Exception):
     ...
 
 
-@dataclass(eq=False, frozen=True)
+@dataclass(eq=False)
 class ObjectDoesNotExistException(ApplicationException):
     object: str
     object_id: int | None = None
@@ -14,7 +14,7 @@ class ObjectDoesNotExistException(ApplicationException):
         return f'{self.object} not found' + f', id: {self.object_id}' if self.object_id else ''
 
 
-@dataclass(eq=False, frozen=True)
+@dataclass(eq=False)
 class IDIsNotProvided(ApplicationException):
     custom_message: str | None = None
 

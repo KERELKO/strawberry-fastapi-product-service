@@ -1,5 +1,5 @@
 from functools import cache
-from typing import Type, TypeVar
+from typing import TypeVar
 import logging
 
 import punq
@@ -33,7 +33,7 @@ from src.users.repositories.sqlalchemy.uow import SQLAlchemyUserUnitOfWork
 from src.users.service import UserService
 
 
-ABC = TypeVar('ABC')
+BaseClass = TypeVar('BaseClass')
 Impl = TypeVar('Impl')
 
 
@@ -43,11 +43,11 @@ class Container:
         return Container._init()
 
     @staticmethod
-    def resolve(base_cls: Type[ABC]) -> Impl:
+    def resolve(base_cls: type[BaseClass]) -> Impl:
         return Container.get().resolve(base_cls)
 
-    @cache
     @staticmethod
+    @cache
     def _init() -> punq.Container:
         container = punq.Container()
 

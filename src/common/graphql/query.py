@@ -1,8 +1,8 @@
 import strawberry
 
 from src.common.di import Container
-from src.products.graphql.resolvers.reviews import StrawberryReviewResolver
 from src.products.graphql.resolvers.products import StrawberryProductResolver
+from src.products.graphql.resolvers.reviews import StrawberryReviewResolver
 from src.products.graphql.schemas.products.queries import Product
 from src.products.graphql.schemas.reviews.queries import Review
 from src.users.graphql.resolver import StrawberryUserResolver
