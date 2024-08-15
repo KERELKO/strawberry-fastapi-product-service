@@ -20,6 +20,7 @@ class Database:
         self.async_session_factory = async_sessionmaker(
             self.engine, class_=AsyncSession, expire_on_commit=False
         )
+        self.listen_for_events()
 
     def init(self):
         asyncio.run(self.create())
@@ -32,7 +33,7 @@ class Database:
         async with self.engine.begin() as conn:
             await conn.run_sync(Base.metadata.drop_all)
 
-    def event_listener(self) -> None:
+    def listen_for_events(self) -> None:
         if self.config.LISTEN_SQL_QUERIES:
             @event.listens_for(self.engine.sync_engine, 'before_execute')
             def sql_statement_listener(conn, clauseelement, multiparams, params):
