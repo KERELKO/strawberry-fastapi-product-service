@@ -1,7 +1,7 @@
 import strawberry
 
-from src.common.base.graphql.schemas import IDeleted, IProduct
-from src.common.utils.graphql import get_required_fields
+from src.common.graphql.base.schemas import IDeleted, IProduct
+from src.common.graphql.utils import get_required_fields
 from src.products.graphql.resolvers.reviews import StrawberryReviewResolver
 from src.products.graphql.schemas.reviews.queries import Review
 

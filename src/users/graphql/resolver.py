@@ -3,9 +3,9 @@ from dataclasses import dataclass
 import strawberry
 from strawberry.types.nodes import Selection
 
-from src.common.base.graphql.resolvers import BaseStrawberryResolver
+from src.common.graphql.base.resolvers import BaseStrawberryResolver
 from src.common.utils.fields import SelectedFields
-from src.common.utils.graphql import parse_id
+from src.common.graphql.utils import parse_id
 from src.users.graphql.converter import StrawberryUserConverter
 from src.users.graphql.schemas.inputs import UserInput, UpdateUserInput
 from src.users.graphql.schemas.queries import User

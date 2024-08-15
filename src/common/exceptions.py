@@ -7,11 +7,11 @@ class ApplicationException(Exception):
 
 @dataclass(eq=False)
 class ObjectDoesNotExistException(ApplicationException):
-    object: str
+    obj: str
     object_id: int | None = None
 
     def __str__(self) -> str:
-        return f'{self.object} not found' + f', id: {self.object_id}' if self.object_id else ''
+        return f'{self.obj} not found' + f', id: {self.object_id}' if self.object_id else ''
 
 
 @dataclass(eq=False)

@@ -1,6 +1,6 @@
 import strawberry
 
-from src.common.base.graphql.schemas import IDeleted, IProduct, IReview, IUser
+from src.common.graphql.base.schemas import IDeleted, IProduct, IReview, IUser
 from src.common.exceptions import IDIsNotProvided
 
 

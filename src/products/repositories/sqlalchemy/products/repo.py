@@ -4,7 +4,7 @@ import sqlalchemy as sql
 from sqlalchemy.orm import joinedload
 
 from src.common.db.sqlalchemy.base import BaseSQLAlchemyRepository
-from src.common.db.sqlalchemy.extensions import _models_to_join, sqlalchemy_repo_extended
+from src.common.db.sqlalchemy.extensions import models_to_join, sqlalchemy_repo_extended
 from src.common.db.sqlalchemy.models import ProductORM, ReviewORM
 from src.common.exceptions import ObjectDoesNotExistException
 from src.common.utils import raise_exc
@@ -87,7 +87,7 @@ class SQLAlchemyAggregatedProductRepository(SQLAlchemyProductRepository):
         return result.unique().scalars().all()
 
     async def get(self, id: int, fields: list[SelectedFields]) -> ProductDTO:
-        _, _, join_review = _models_to_join(fields)
+        _, _, join_review = models_to_join(fields)
         _product = await self._fetch_one_with_related(id=id, join_reviews=join_review)
         if not _product:
             raise ObjectDoesNotExistException(ProductORM.__name__, object_id=id)
@@ -109,7 +109,7 @@ class SQLAlchemyAggregatedProductRepository(SQLAlchemyProductRepository):
         offset: int = 0,
         limit: int = 20,
     ) -> list[ProductDTO]:
-        _, _, join_review = _models_to_join(fields)
+        _, _, join_review = models_to_join(fields)
         _products = await self._fetch_many_with_related(
             offset=offset, limit=limit, join_reviews=join_review,
         )

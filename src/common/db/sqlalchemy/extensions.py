@@ -24,15 +24,17 @@ TypeDTO = TypeVar('TypeDTO', bound=BaseDTO)
 
 class MetaSQLAlchemyRepository(type):
     """
-    Extends subclass repository with the following methods:
+    Extends subclass with the following methods:
     * create
     * update
     * delete
     * _construct_select_query
     * _execute_query
 
-    All async.
-    The subclass must implement Meta class inside with variable that contains SQLAlchemy model type
+    All async
+
+    The subclass must implement Meta class
+    inside with a variable that contains SQLAlchemy model type
     """
     def __new__(
         meta_cls,  # type: ignore
@@ -59,24 +61,25 @@ def sqlalchemy_repo_extended(
     query_executor: bool = True,
 ) -> Callable | type:
     """
-    Can extend repository class with the following methods:
+    Extend repository class with the following methods:
     * get
     * create
     * update
     * delete
 
-    if query_executor is True:
+    if `query_executor=True`:
     * _construct_select_query
     * _execute_query
 
-    All async.
-    The class must implement Meta class inside with variable that contains SQLAlchemy model type
+    All async
+
+    The class must implement `Meta` class inside with a variable that contains SQLAlchemy model type
     """
 
     def wrapper(cls) -> type:
         if 'Meta' not in cls.__dict__:
             raise AttributeError(
-                f'{cls.__name__} does not have "Meta" class inside, with defined sqlalchemy model'
+                f'{cls.__name__} does not have "Meta" class inside with defined sqlalchemy model'
             )
         model = cls.__dict__['Meta'].model
         if create:
@@ -195,7 +198,7 @@ def _select_query_constructor(model: Type[SQLAlchemyModel]):
     return construct_select_query
 
 
-def _models_to_join(fields: list[SelectedFields]) -> tuple[bool, bool, bool]:
+def models_to_join(fields: list[SelectedFields]) -> tuple[bool, bool, bool]:
     """
     Returns bool values for models that need to join from SelectedFields:
 

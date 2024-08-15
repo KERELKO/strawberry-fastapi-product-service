@@ -1,6 +1,6 @@
 import strawberry
 
-from src.common.base.graphql.schemas import IUser
+from src.common.graphql.base.schemas import IUser
 from src.common.di import Container
 from src.common.exceptions import ObjectDoesNotExistException
 from src.users.graphql.resolver import StrawberryUserResolver

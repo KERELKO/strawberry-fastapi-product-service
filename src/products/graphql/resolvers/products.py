@@ -3,8 +3,8 @@ from dataclasses import dataclass
 import strawberry
 from strawberry.types.nodes import Selection
 
-from src.common.base.graphql.resolvers import BaseStrawberryResolver
-from src.common.utils.graphql import parse_id
+from src.common.graphql.base.resolvers import BaseStrawberryResolver
+from src.common.graphql.utils import parse_id
 from src.products.dto import ProductDTO
 from src.products.graphql.schemas.products.inputs import ProductInput, UpdateProductInput
 from src.products.graphql.schemas.products.queries import DeletedProduct, Product

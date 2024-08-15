@@ -1,6 +1,6 @@
 import strawberry
 
-from src.common.base.graphql.schemas import IReview
+from src.common.graphql.base.schemas import IReview
 from src.common.di import Container
 from src.common.exceptions import ObjectDoesNotExistException
 from src.products.graphql.resolvers.reviews import StrawberryReviewResolver

@@ -5,7 +5,7 @@ from sqlalchemy.orm import joinedload
 
 from src.common.db.sqlalchemy.base import BaseSQLAlchemyRepository
 from src.common.db.sqlalchemy.extensions import (
-    _models_to_join,
+    models_to_join,
     raise_exc,
     sqlalchemy_repo_extended,
 )
@@ -117,7 +117,7 @@ class SQLAlchemyAggregatedReviewRepository(SQLAlchemyReviewRepository):
         return review.scalar_one_or_none()
 
     async def get(self, id: int, fields: list[SelectedFields]) -> ReviewDTO | None:
-        join_user, join_product, _ = _models_to_join(fields)
+        join_user, join_product, _ = models_to_join(fields)
         _review = await self._fetch_one_with_related(
             join_product=join_product, join_user=join_user, id=id,
         )
@@ -140,7 +140,7 @@ class SQLAlchemyAggregatedReviewRepository(SQLAlchemyReviewRepository):
         product_id: int | None = None,
         user_id: int | None = None,
     ) -> list[ReviewDTO]:
-        join_user, join_product, _ = _models_to_join(fields)
+        join_user, join_product, _ = models_to_join(fields)
         _reviews = await self._fetch_many_with_related(
             join_product=join_product,
             join_user=join_user,

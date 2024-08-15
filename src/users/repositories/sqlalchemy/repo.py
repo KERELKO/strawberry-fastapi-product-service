@@ -6,7 +6,7 @@ from sqlalchemy.orm.attributes import InstrumentedAttribute
 
 from src.common.db.sqlalchemy.base import BaseSQLAlchemyRepository
 from src.common.db.sqlalchemy.extensions import (
-    _models_to_join,
+    models_to_join,
     raise_exc,
     sqlalchemy_repo_extended,
 )
@@ -94,7 +94,7 @@ class SQLAlchemyAggregatedUserRepository(SQLAlchemyUserRepository):
         return result.unique().scalars().all()
 
     async def get(self, id: int, fields: list[SelectedFields]) -> UserDTO:
-        _, _, join_review = _models_to_join(fields)
+        _, _, join_review = models_to_join(fields)
         _user = await self._fetch_one_with_related(id=id, join_reviews=join_review)
         if not _user:
             raise ObjectDoesNotExistException(UserORM.__name__, object_id=id)
@@ -116,7 +116,7 @@ class SQLAlchemyAggregatedUserRepository(SQLAlchemyUserRepository):
         offset: int = 0,
         limit: int = 20,
     ) -> list[UserDTO]:
-        _, _, join_review = _models_to_join(fields)
+        _, _, join_review = models_to_join(fields)
         _users = await self._fetch_many_with_related(
             offset=offset, limit=limit, join_reviews=join_review,
         )

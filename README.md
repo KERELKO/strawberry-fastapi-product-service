@@ -164,4 +164,4 @@ If you'd like to contribute to this project, feel free to fork the repository an
 - [ ] Logging
 - [ ] Pointer-based Pagination
 - [x] At least partly solve the N+1 problem
-- [ ] Remake folder structure (graphql as separate folder in src/)
+- [x] Remake folder structure

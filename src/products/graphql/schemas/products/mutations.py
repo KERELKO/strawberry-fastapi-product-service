@@ -1,6 +1,6 @@
 import strawberry
 
-from src.common.base.graphql.schemas import IProduct
+from src.common.graphql.base.schemas import IProduct
 from src.common.exceptions import ObjectDoesNotExistException
 from src.products.graphql.resolvers.products import StrawberryProductResolver
 from src.products.graphql.schemas.products.inputs import ProductInput, UpdateProductInput
