@@ -18,7 +18,7 @@ class UserORM(Base):
     )
 
     def __repr__(self) -> str:
-        return f'UserORM(id={self.id} username={self.username})'
+        return f'UserORM(id={self.id}, username={self.username})'
 
     def as_dict(self) -> dict[str, Any]:
         data = {
@@ -42,8 +42,8 @@ class ReviewORM(Base):
 
     def __repr__(self) -> str:
         return (
-            f'ReviewORM(id={self.id} content={self.content} '
-            f'user_id={self.user_id} product_id={self.product_id})'
+            f'ReviewORM(id={self.id}, content={self.content}, '
+            f'user_id={self.user_id}, product_id={self.product_id})'
         )
 
     def as_dict(self) -> dict[str, Any]:
@@ -67,7 +67,7 @@ class ProductORM(Base):
     )
 
     def __repr__(self) -> str:
-        return f'ProductORM(id={self.id} title={self.title} description={self.description})'
+        return f'ProductORM(id={self.id}, title={self.title}, description={self.description})'
 
     def as_dict(self) -> dict[str, Any]:
         data = {
